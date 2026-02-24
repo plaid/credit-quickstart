@@ -4,7 +4,7 @@ A sample loan application demonstrating Plaid's [Check Consumer Reports (CRA)](h
 
 Built with React 19 + Vite + TypeScript on the frontend, and Node.js + Express on the backend.
 
-> **Looking for the legacy Income product?** See the [income-sample](https://github.com/plaid/income-sample) app instead.
+For the legacy Income product, see [income-sample](https://github.com/plaid/income-sample).
 
 ## Prerequisites
 
