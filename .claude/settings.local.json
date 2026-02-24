@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(DEBUG=tailwindcss:*:*)",
+      "Bash(git init:*)",
+      "Bash(lsof:*)",
+      "Bash(gh auth status:*)",
+      "Bash(GH_HOST=github.com gh repo create:*)"
+    ]
+  }
+}

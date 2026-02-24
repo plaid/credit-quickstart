@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  /* Mint — Plaid hero color */
+  --color-mint-100: #effffa;
+  --color-mint-200: #d8fef3;
+  --color-mint-400: #42f0cd;
+  --color-mint-450: #10d1b7;
+  --color-mint-500: #0ba299;
+  --color-mint-600: #088181;
+  --color-mint-700: #05565c;
+
+  /* Sky Blue */
+  --color-sky-100: #e5fcff;
+  --color-sky-200: #ccf8ff;
+  --color-sky-400: #51d2fb;
+  --color-sky-700: #07578d;
+  --color-sky-1000: #00172e;
+}

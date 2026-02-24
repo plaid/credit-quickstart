@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 26.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 47 48" style="enable-background:new 0 0 47 48;" xml:space="preserve">
+<style type="text/css">
+	.st0{filter:url(#Adobe_OpacityMaskFilter);}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+	.st2{mask:url(#b_00000030463275552932219670000014094336566299449734_);fill-rule:evenodd;clip-rule:evenodd;fill:#111111;}
+</style>
+<g>
+	<defs>
+		<filter id="Adobe_OpacityMaskFilter" filterUnits="userSpaceOnUse" x="0" y="0" width="47" height="47.5">
+			<feColorMatrix  type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
+		</filter>
+	</defs>
+	
+		<mask maskUnits="userSpaceOnUse" x="0" y="0" width="47" height="47.5" id="b_00000030463275552932219670000014094336566299449734_">
+		<g class="st0">
+			<path id="a_00000138535885952405959420000003892059544541877929_" class="st1" d="M0,47.5h126V0H0V47.5z"/>
+		</g>
+	</mask>
+	<path class="st2" d="M18.6,0L4.1,3.8l-4,14.6l5,5.1L0,28.6l3.8,14.7l14.5,4l5.1-5.1l5,5.1l14.5-3.8l4-14.6l-5-5.1l5.1-5.1L43.2,4.1
+		l-14.5-4l-5.1,5.1L18.6,0z M9.7,6.6l7.7-2l3.4,3.4l-4.9,4.9L9.7,6.6z M26.5,8.1l3.4-3.4l7.6,2.1L31.3,13C31.3,13,26.5,8.1,26.5,8.1
+		z M4.7,17.2l2.1-7.7l6.1,6.3L8,20.7L4.7,17.2L4.7,17.2z M34.2,16l6.2-6.2l2,7.7L39,20.9C39,20.9,34.2,16,34.2,16z M18.7,15.9
+		l4.9-4.9l4.8,4.9l-4.9,4.9L18.7,15.9z M10.9,23.6l4.9-4.9l4.8,4.9l-4.9,4.9C15.7,28.6,10.9,23.6,10.9,23.6z M26.4,23.8l4.9-4.9
+		l4.8,4.9l-4.9,4.9C31.2,28.7,26.4,23.8,26.4,23.8z M4.6,29.9L8,26.5l4.8,4.9l-6.2,6.2C6.6,37.7,4.6,29.9,4.6,29.9z M18.6,31.5
+		l4.9-4.9l4.8,4.9l-4.9,4.9C23.4,36.5,18.6,31.5,18.6,31.5z M34.1,31.7l4.9-4.9l3.4,3.4l-2.1,7.7C40.2,37.9,34.1,31.7,34.1,31.7z
+		 M9.4,40.6l6.2-6.2l4.8,4.9l-3.4,3.4L9.4,40.6L9.4,40.6z M26.3,39.4l4.9-4.9l6.1,6.3l-7.7,2C29.6,42.9,26.3,39.4,26.3,39.4z"/>
+</g>
+</svg>

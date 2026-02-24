@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Environment variables (contains secrets)
+.env
+
+# User data store
+user_data.json
+
+# Build output
+dist/
+
+# Editor
+.DS_Store
+*.local

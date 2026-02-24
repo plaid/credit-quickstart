@@ -1,0 +1,41 @@
+{
+  "name": "cra-sample-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start:client": "vite",
+    "start:server": "nodemon --ext js,mjs --ignore user_data.json server/index.js",
+    "start:webhook": "nodemon --ext js,mjs --ignore user_data.json server/webhookServer.js",
+    "start": "concurrently --names \"SERVER,WEBHOOK,CLIENT\" --prefix-colors \"magenta,yellow,blue\" \"npm run start:server\" \"npm run start:webhook\" \"npm run start:client\"",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "4.1.18",
+    "body-parser": "^2.2.2",
+    "dotenv": "^17.2.4",
+    "express": "^5.2.1",
+    "plaid": "^41.1.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-plaid-link": "^4.1.1",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react-swc": "^4.2.3",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.2",
+    "eslint-plugin-react-hooks": "^6.1.1",
+    "eslint-plugin-react-refresh": "^0.5.0",
+    "globals": "^16.5.0",
+    "nodemon": "^3.1.11",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.55.0",
+    "vite": "^7.3.1"
+  }
+}
