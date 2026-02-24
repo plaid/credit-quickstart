@@ -4,7 +4,7 @@ export const callMyServer = async function <T = any>(
   isPost: boolean = false,
   postData: unknown = null,
   onError?: (errorMsg: string) => void
-): Promise<T> {
+): Promise<T | null> {
   const optionsObj: RequestInit = isPost ? { method: "POST" } : {};
   if (isPost && postData !== null) {
     optionsObj.headers = { "Content-type": "application/json" };

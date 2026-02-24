@@ -10,6 +10,10 @@ const ReportPending: React.FC = () => {
     useAppContext();
   const eventSourceRef = useRef<EventSource | null>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const webhookUrlRef = useRef(webhookUrl);
+  useEffect(() => {
+    webhookUrlRef.current = webhookUrl;
+  }, [webhookUrl]);
   const [isResetting, setIsResetting] = useState(false);
   const [pollingFallback, setPollingFallback] = useState(false);
 
@@ -30,13 +34,15 @@ const ReportPending: React.FC = () => {
       callMyServer("/server/reports/base_report"),
       callMyServer("/server/reports/income_insights"),
     ]);
-    if (baseReport && incomeInsights) {
-      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-      setBaseReport(baseReport);
-      setIncomeInsights(incomeInsights);
-      setDebugInfo("Report loaded successfully.");
-      setFlowState(FlowState.REPORT_READY);
+    if (baseReport == null || incomeInsights == null) {
+      setDebugInfo("Failed to fetch reports. Try again.");
+      return;
     }
+    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    setBaseReport(baseReport);
+    setIncomeInsights(incomeInsights);
+    setDebugInfo("Report loaded successfully.");
+    setFlowState(FlowState.REPORT_READY);
   };
 
   const startPolling = (reason: string) => {
@@ -49,8 +55,8 @@ const ReportPending: React.FC = () => {
     const es = new EventSource("/server/events/stream");
     eventSourceRef.current = es;
 
-    es.addEventListener("connected", async () => {
-      if (!webhookUrl) {
+    const handleConnected = async () => {
+      if (!webhookUrlRef.current) {
         startPolling("⚠️ No webhook URL configured — polling for report every 5s.");
         return;
       }
@@ -60,28 +66,36 @@ const ReportPending: React.FC = () => {
       );
 
       if (result?.valid) {
-        setDebugInfo(`Waiting for webhook at ${webhookUrl}...`);
+        setDebugInfo(`Waiting for webhook at ${webhookUrlRef.current}...`);
       } else {
         startPolling(
-          `⚠️ Webhook receiver endpoint ${webhookUrl} invalid, falling back to polling every 5s.`
+          `⚠️ Webhook receiver endpoint ${webhookUrlRef.current} invalid, falling back to polling every 5s.`
         );
       }
-    });
+    };
 
-    es.addEventListener("report-ready", async () => {
+    const handleReportReady = async () => {
       setDebugInfo("Report is ready! Fetching data...");
       await fetchReports();
-    });
+    };
+
+    es.addEventListener("connected", handleConnected);
+    es.addEventListener("report-ready", handleReportReady);
 
     es.onerror = () => {
-      console.log("SSE connection error or closed");
+      es.removeEventListener("connected", handleConnected);
+      es.removeEventListener("report-ready", handleReportReady);
+      if (!pollIntervalRef.current) {
+        startPolling("⚠️ SSE connection failed — polling for report every 5s.");
+      }
     };
 
     return () => {
+      es.removeEventListener("connected", handleConnected);
+      es.removeEventListener("report-ready", handleReportReady);
       es.close();
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleManualCheck = async () => {

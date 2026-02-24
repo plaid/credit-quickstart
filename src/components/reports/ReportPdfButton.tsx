@@ -22,7 +22,7 @@ const ReportPdfButton: React.FC = () => {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 100);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
     } catch (err) {
       setError("An unexpected error occurred.");
       console.error("Error downloading PDF:", err);
