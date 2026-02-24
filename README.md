@@ -1,8 +1,10 @@
-# Platypus Lending — CRA Sample App
+# Plaid Check — Consumer Report Sample App
 
-A sample loan application demonstrating Plaid's [Check Consumer Reports (CRA)](https://plaid.com/docs/check/) products: **Base Report** and **Income Insights**.
+A sample loan application demonstrating Plaid's [Check Consumer Reports (CRA)](https://plaid.com/docs/check/) products: **Base Report** and **Income Insights**. Check Consumer Report is Plaid's recommended solution for most credit use cases.
 
 Built with React 19 + Vite + TypeScript on the frontend, and Node.js + Express on the backend.
+
+> **Looking for the legacy Income product?** See the [income-sample](https://github.com/plaid/income-sample) app instead.
 
 ## Prerequisites
 
