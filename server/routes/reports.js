@@ -74,7 +74,13 @@ router.post("/refresh", async (req, res, next) => {
       return;
     }
 
-    await plaidClient.craCheckReportCreate({ user_id: record.plaidUserId });
+    const webhookUrl = (process.env.WEBHOOK_URL || "").trim();
+    await plaidClient.craCheckReportCreate({
+      user_id: record.plaidUserId,
+      webhook: webhookUrl,
+      days_requested: 730,
+      consumer_report_permissible_purpose: "ACCOUNT_REVIEW_CREDIT",
+    });
     await updateRecord({ reportReady: false });
     res.json({ status: "success" });
   } catch (error) {

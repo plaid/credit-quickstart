@@ -53,6 +53,7 @@ export interface BaseReportTransaction {
 
 export interface BaseReportData {
   report?: {
+    date_generated?: string;
     items?: Array<{
       accounts?: BaseReportAccount[];
       transactions?: BaseReportTransaction[];

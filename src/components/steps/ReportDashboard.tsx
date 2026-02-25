@@ -13,6 +13,9 @@ const ReportDashboard: React.FC = () => {
     useAppContext();
 
   const owner = baseReport?.report?.items?.[0]?.accounts?.[0]?.owners?.[0];
+  const dateGenerated = baseReport?.report?.date_generated
+    ? new Date(baseReport.report.date_generated).toLocaleString()
+    : null;
   const [activeTab, setActiveTab] = useState<ReportTab>("base_report");
 
   const handleRefreshReport = async () => {
@@ -90,6 +93,11 @@ const ReportDashboard: React.FC = () => {
         </div>
       </div>
 
+      {dateGenerated && (
+        <div className="px-6 py-2 bg-gray-50 border-b border-gray-200 text-xs text-gray-500">
+          Report generated: <span className="font-medium text-gray-700">{dateGenerated}</span>
+        </div>
+      )}
       <div className="border-b border-gray-200 px-6">
         <nav className="flex gap-4">
           <button
