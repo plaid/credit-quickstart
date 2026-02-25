@@ -75,9 +75,9 @@ To inspect incoming webhooks, open [http://localhost:4040](http://localhost:4040
 
 ## Refreshing a report for a returning user
 
-When a user applies for another loan, you can generate a fresh report without creating a new Plaid user. Because the `plaidUserId` is already stored, you skip the user creation step and go straight to creating a new Link token — Plaid associates it with the existing user and generates an updated report once Link completes.
+To generate a fresh report for a user who has already connected their bank account, call [`/cra/check_report/create`](https://plaid.com/docs/api/products/check/#cracheckreportcreate) directly — no need to re-run Link. Plaid will fetch the latest data and send a new `USER_CHECK_REPORT_READY` webhook when the updated report is ready to retrieve.
 
-In this sample app, **Start Over** wipes the store entirely and creates a new user each time. In a real integration, you'd persist the `plaidUserId` and only call `/server/users/create` (which calls [`/user/create`](https://plaid.com/docs/api/users/#usercreate)) for first-time applicants. For returning users, call `/server/tokens/create_link_token` directly with the stored `plaidUserId` and run the same Link + report flow from there.
+This sample app doesn't implement this flow, but in a real integration you would persist the `plaidUserId` and call `/cra/check_report/create` with it whenever a returning user applies again.
 
 ## Data storage
 
