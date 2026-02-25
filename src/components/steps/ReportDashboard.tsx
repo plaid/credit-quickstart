@@ -56,13 +56,17 @@ const ReportDashboard: React.FC = () => {
                   <p className="text-gray-500">{formatPhone(applicantData.phoneNumber)}</p>
                 </div>
               )}
-              {owner && (owner.names[0] || owner.phone_numbers[0]) && (
-                <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Account owner</p>
-                  {owner.names[0] && <p className="text-gray-800 font-medium">{owner.names[0]}</p>}
-                  {owner.phone_numbers[0] && <p className="text-gray-500">{formatPhone(owner.phone_numbers[0].data)}</p>}
-                </div>
-              )}
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wide mb-0.5">Account owner</p>
+                {owner && (owner.names[0] || owner.phone_numbers[0]) ? (
+                  <>
+                    {owner.names[0] && <p className="text-gray-800 font-medium">{owner.names[0]}</p>}
+                    {owner.phone_numbers[0] && <p className="text-gray-500">{formatPhone(owner.phone_numbers[0].data)}</p>}
+                  </>
+                ) : (
+                  <p className="text-gray-400 italic">Unavailable</p>
+                )}
+              </div>
             </div>
             <p className="text-xs text-gray-400 mt-1">
               Powered by Plaid Check Reports
