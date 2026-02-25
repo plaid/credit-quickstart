@@ -43,6 +43,7 @@ When Plaid Link opens, use a **non-OAuth institution** (e.g. First Platypus Bank
 | `user_credit_bonus` | any | Two salary streams: one with bonuses in paycheck, one with bonuses as separate transactions |
 | `user_credit_joint_account` | any | Two salary streams and two identities on the account |
 | `user_credit_profile_excellent` | any | Positive cash flow, high salary-based income with secondary rental income |
+| `user_credit_profile_good` | any | Neutral cash flow, multiple gig economy income streams |
 | `user_credit_profile_poor` | any | Net loss cash flow, no consistent income source |
 
 After connecting, the app waits for a webhook from Plaid indicating the report is ready. Without webhooks configured (see below), use the **Check Report Status** button on the pending screen to manually poll for the report.

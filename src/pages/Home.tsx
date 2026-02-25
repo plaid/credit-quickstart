@@ -92,7 +92,7 @@ const Home: React.FC = () => {
 
     setLinkToken(tokenResult.linkToken);
     setDebugInfo(
-      `Link token created. Opening Plaid Link...\n\nIn sandbox, use a non-OAuth institution (e.g. First Platypus Bank) with credentials that have income data:\n• Username: user_bank_income  Password: {}\n• Username: user_credit_profile_excellent  Password: any\n• Username: user_credit_profile_good  Password: any\n\nSee README for the full list of test users.`
+      `Link token created. Opening Plaid Link...\n\nIn sandbox, use a non-OAuth institution (e.g. First Platypus Bank) with credentials that have income data:\n• Username: user_bank_income  Password: {}\n• Username: user_credit_profile_excellent  Password: any\n• Username: user_credit_profile_poor  Password: any\n\nSee README for the full list of test users.`
     );
     setIsCreatingUser(false);
     setLinkExited(false);
@@ -242,7 +242,7 @@ const Home: React.FC = () => {
                 <td>any</td>
               </tr>
               <tr className="text-gray-500">
-                <td className="pr-3">user_credit_profile_good</td>
+                <td className="pr-3">user_credit_profile_poor</td>
                 <td>any</td>
               </tr>
             </tbody>
