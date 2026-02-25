@@ -39,7 +39,7 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
       callMyServer("/server/reports/income_insights"),
     ]);
     if (baseReport == null || incomeInsights == null) {
-      setDebugInfo("Failed to fetch reports. Try again.");
+      setDebugInfo("Report not ready yet — will retry.");
       return;
     }
     if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
