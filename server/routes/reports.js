@@ -1,6 +1,6 @@
 import express from "express";
 import plaidClient from "../plaid.js";
-import { getRecord } from "../store.js";
+import { getRecord, updateRecord } from "../store.js";
 
 const router = express.Router();
 
@@ -62,6 +62,22 @@ router.get("/pdf", async (req, res, next) => {
         // not JSON, leave as-is
       }
     }
+    next(error);
+  }
+});
+
+router.post("/refresh", async (req, res, next) => {
+  try {
+    const record = getRecord();
+    if (!record.plaidUserId) {
+      res.status(400).json({ error: "No user found." });
+      return;
+    }
+
+    await plaidClient.craCheckReportCreate({ user_id: record.plaidUserId });
+    await updateRecord({ reportReady: false });
+    res.json({ status: "success" });
+  } catch (error) {
     next(error);
   }
 });

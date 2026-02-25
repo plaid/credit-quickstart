@@ -15,6 +15,11 @@ const ReportDashboard: React.FC = () => {
   const owner = baseReport?.report?.items?.[0]?.accounts?.[0]?.owners?.[0];
   const [activeTab, setActiveTab] = useState<ReportTab>("base_report");
 
+  const handleRefreshReport = async () => {
+    await callMyServer("/server/reports/refresh", true, {});
+    setFlowState(FlowState.REPORT_PENDING);
+  };
+
   const handleStartOver = async () => {
     await callMyServer("/server/users/reset", true, {});
     setBaseReport(null);
@@ -65,6 +70,12 @@ const ReportDashboard: React.FC = () => {
           </div>
           <div className="flex items-center gap-3">
             <ReportPdfButton />
+            <button
+              onClick={handleRefreshReport}
+              className="text-sm text-gray-500 hover:text-gray-700 underline"
+            >
+              Refresh Report
+            </button>
             <button
               onClick={handleStartOver}
               className="text-sm text-gray-500 hover:text-gray-700 underline"

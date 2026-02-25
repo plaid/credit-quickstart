@@ -53,7 +53,7 @@ Once the report is ready, you'll see:
 - **Income Insights tab** — detected income sources and projected monthly income
 - **Download PDF Report** button for the full consumer report PDF
 
-Click **Start Over** to reset and run a fresh flow.
+Click **Refresh Report** to trigger a new report generation for the same user without re-running Link — this demonstrates the [`/cra/check_report/create`](https://plaid.com/docs/api/products/check/#cracheckreportcreate) refresh flow. In sandbox, the refreshed report won't show new data since there's no new activity to pick up. Click **Start Over** to reset and run a fresh flow.
 
 ## Receiving webhooks
 
@@ -72,12 +72,6 @@ WEBHOOK_URL=https://abc123.ngrok-free.app/server/receive_webhook
 Restart the server after updating `.env`. You can also update the webhook URL at runtime via the debug panel at the bottom of the page — useful if ngrok restarts and gives you a new URL.
 
 To inspect incoming webhooks, open [http://localhost:4040](http://localhost:4040) in your browser. ngrok's inspector shows every request that came through the tunnel with full headers and body, and lets you replay them.
-
-## Refreshing a report for a returning user
-
-To generate a fresh report for a user who has already connected their bank account, call [`/cra/check_report/create`](https://plaid.com/docs/api/products/check/#cracheckreportcreate) directly — no need to re-run Link. Plaid will fetch the latest data and send a new `USER_CHECK_REPORT_READY` webhook when the updated report is ready to retrieve.
-
-This sample app doesn't implement this flow, but in a real integration you would persist the `plaidUserId` and call `/cra/check_report/create` with it whenever a returning user applies again.
 
 ## Data storage
 
