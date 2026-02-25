@@ -78,7 +78,7 @@ const ReportDashboard: React.FC = () => {
               onClick={handleRefreshReport}
               className="text-sm text-gray-500 hover:text-gray-700 underline"
             >
-              Simulate new loan application
+              Simulate new application
             </button>
             <button
               onClick={handleStartOver}
