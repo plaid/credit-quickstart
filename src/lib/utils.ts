@@ -48,12 +48,15 @@ export const formatPhone = function (phone: string): string {
 const UPPERCASE_TERMS = new Set(["bnpl", "ewa"]);
 
 export const formatCategory = function (raw: string): string {
-  return raw
+  const words = raw
     .replace(/_/g, " ")
     .toLowerCase()
     .split(" ")
-    .map((word) => (UPPERCASE_TERMS.has(word) ? word.toUpperCase() : word))
-    .join(" ");
+    .map((word) => (UPPERCASE_TERMS.has(word) ? word.toUpperCase() : word));
+  if (words.length > 0 && !UPPERCASE_TERMS.has(words[0].toLowerCase())) {
+    words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+  }
+  return words.join(" ");
 };
 
 export const formatDate = function (dateStr: string): string {

@@ -27,13 +27,13 @@ const IncomeStreamCard: React.FC<IncomeStreamCardProps> = ({
           )}
           <div className="flex gap-3 mt-1">
             {category.toUpperCase() !== "UNKNOWN" && (
-              <span className="text-xs bg-mint-100 text-mint-600 px-2 py-0.5 rounded-full capitalize">
+              <span className="text-xs bg-mint-100 text-mint-600 px-2 py-0.5 rounded-full">
                 {formatCategory(category)}
               </span>
             )}
             {payFrequency && payFrequency.toUpperCase() !== "UNKNOWN" && (
-              <span className="text-xs text-gray-500 capitalize">
-                {payFrequency.replace(/_/g, " ").toLowerCase()}
+              <span className="text-xs text-gray-500">
+                {formatCategory(payFrequency)}
               </span>
             )}
           </div>

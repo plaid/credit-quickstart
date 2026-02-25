@@ -44,7 +44,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ transactions }) => 
               <td className="py-2 px-3 text-gray-500 text-xs">
                 {txn.credit_category ? (
                   <>
-                    <span className="capitalize">{formatCategory(txn.credit_category.primary)}</span>
+                    <span>{formatCategory(txn.credit_category.primary)}</span>
                     {(() => {
                       const sub = txn.credit_category.detailed
                         ? formatCategory(
@@ -54,7 +54,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ transactions }) => 
                           )
                         : null;
                       return sub && sub !== formatCategory(txn.credit_category.primary)
-                        ? <span className="block text-gray-400 capitalize">{sub}</span>
+                        ? <span className="block text-gray-400">{sub}</span>
                         : null;
                     })()}
                   </>
