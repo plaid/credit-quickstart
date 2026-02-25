@@ -73,6 +73,12 @@ Restart the server after updating `.env`. You can also update the webhook URL at
 
 To inspect incoming webhooks, open [http://localhost:4040](http://localhost:4040) in your browser. ngrok's inspector shows every request that came through the tunnel with full headers and body, and lets you replay them.
 
+## Refreshing a report for a returning user
+
+When a user applies for another loan, you can generate a fresh report without creating a new Plaid user. Because the `plaidUserId` is already stored, you skip the user creation step and go straight to creating a new Link token — Plaid associates it with the existing user and generates an updated report once Link completes.
+
+In this sample app, **Start Over** wipes the store entirely and creates a new user each time. In a real integration, you'd persist the `plaidUserId` and only call `/server/users/create` (which calls [`/user/create`](https://plaid.com/docs/api/users/#usercreate)) for first-time applicants. For returning users, call `/server/tokens/create_link_token` directly with the stored `plaidUserId` and run the same Link + report flow from there.
+
 ## Data storage
 
 User data is stored in `user_data.json` (created automatically, excluded from git). To start fresh, stop the server and delete the file, or click **Start Over** in the app.
