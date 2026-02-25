@@ -1,5 +1,5 @@
 import { BaseReportTransaction } from "../../lib/types";
-import { showAsCurrency, formatDate } from "../../lib/utils";
+import { showAsCurrency, formatDate, formatCategory } from "../../lib/utils";
 
 interface TransactionTableProps {
   transactions: BaseReportTransaction[];
@@ -44,14 +44,16 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ transactions }) => 
               <td className="py-2 px-3 text-gray-500 text-xs">
                 {txn.credit_category ? (
                   <>
-                    <span className="capitalize">{txn.credit_category.primary.replace(/_/g, " ").toLowerCase()}</span>
+                    <span className="capitalize">{formatCategory(txn.credit_category.primary)}</span>
                     {(() => {
                       const sub = txn.credit_category.detailed
-                        ?.replace(new RegExp(`^${txn.credit_category.primary}_?`, "i"), "")
-                        .replace(/_/g, " ")
-                        .toLowerCase()
-                        .trim();
-                      return sub && sub !== txn.credit_category.primary.replace(/_/g, " ").toLowerCase()
+                        ? formatCategory(
+                            txn.credit_category.detailed
+                              .replace(new RegExp(`^${txn.credit_category.primary}_?`, "i"), "")
+                              .trim()
+                          )
+                        : null;
+                      return sub && sub !== formatCategory(txn.credit_category.primary)
                         ? <span className="block text-gray-400 capitalize">{sub}</span>
                         : null;
                     })()}

@@ -12,7 +12,10 @@ const ReportDashboard: React.FC = () => {
   const { setFlowState, setBaseReport, setIncomeInsights, setLinkToken, setDebugInfo, setApplicantData, baseReport, applicantData } =
     useAppContext();
 
-  const owner = baseReport?.report?.items?.[0]?.accounts?.[0]?.owners?.[0];
+  const owner = baseReport?.report?.items
+    ?.flatMap((item) => item.accounts ?? [])
+    ?.flatMap((account) => account.owners ?? [])
+    ?.find((o) => o.names?.length > 0 || o.phone_numbers?.length > 0);
   const dateGenerated = baseReport?.report?.date_generated
     ? new Date(baseReport.report.date_generated).toLocaleString()
     : null;

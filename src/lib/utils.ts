@@ -45,6 +45,17 @@ export const formatPhone = function (phone: string): string {
   return phone;
 };
 
+const UPPERCASE_TERMS = new Set(["bnpl", "ewa"]);
+
+export const formatCategory = function (raw: string): string {
+  return raw
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .split(" ")
+    .map((word) => (UPPERCASE_TERMS.has(word) ? word.toUpperCase() : word))
+    .join(" ");
+};
+
 export const formatDate = function (dateStr: string): string {
   if (!dateStr) return "";
   const date = new Date(dateStr + "T00:00:00");

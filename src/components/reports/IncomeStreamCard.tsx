@@ -1,4 +1,4 @@
-import { showAsCurrency } from "../../lib/utils";
+import { showAsCurrency, formatCategory } from "../../lib/utils";
 
 interface IncomeStreamCardProps {
   description: string;
@@ -28,7 +28,7 @@ const IncomeStreamCard: React.FC<IncomeStreamCardProps> = ({
           <div className="flex gap-3 mt-1">
             {category.toUpperCase() !== "UNKNOWN" && (
               <span className="text-xs bg-mint-100 text-mint-600 px-2 py-0.5 rounded-full capitalize">
-                {category.replace(/_/g, " ").toLowerCase()}
+                {formatCategory(category)}
               </span>
             )}
             {payFrequency && payFrequency.toUpperCase() !== "UNKNOWN" && (
