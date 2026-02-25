@@ -11,7 +11,7 @@ const TEST_DATA: ApplicantFormData = {
   lastName: "Bobbeth Charleson",
   dateOfBirth: "1990-01-01",
   email: "alberta.charleson@example.com",
-  phoneNumber: "+14155550000",
+  phoneNumber: "+14154555011",
   address: {
     street: "123 Main St",
     city: "San Francisco",
