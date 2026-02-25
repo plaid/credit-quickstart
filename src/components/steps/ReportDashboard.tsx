@@ -17,7 +17,7 @@ const ReportDashboard: React.FC = () => {
 
   const handleRefreshReport = async () => {
     await callMyServer("/server/reports/refresh", true, {});
-    setFlowState(FlowState.REPORT_PENDING);
+    setFlowState(FlowState.REPORT_REFRESH_PENDING);
   };
 
   const handleStartOver = async () => {
@@ -74,7 +74,7 @@ const ReportDashboard: React.FC = () => {
               onClick={handleRefreshReport}
               className="text-sm text-gray-500 hover:text-gray-700 underline"
             >
-              Refresh Report
+              Simulate new loan application
             </button>
             <button
               onClick={handleStartOver}

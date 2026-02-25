@@ -7,11 +7,11 @@ interface ApplicantFormProps {
 }
 
 const TEST_DATA: ApplicantFormData = {
-  firstName: "Alex",
-  lastName: "Testuser",
+  firstName: "Alberta",
+  lastName: "Bobbeth Charleson",
   dateOfBirth: "1990-01-01",
-  email: "alex.testuser@example.com",
-  phoneNumber: "+14155550000",
+  email: "alberta.charleson@example.com",
+  phoneNumber: "+11112223333",
   address: {
     street: "123 Main St",
     city: "San Francisco",

@@ -5,7 +5,11 @@ import { FlowState } from "../../lib/constants";
 
 const POLL_INTERVAL_MS = 5000;
 
-const ReportPending: React.FC = () => {
+interface ReportPendingProps {
+  isRefresh?: boolean;
+}
+
+const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
   const { setFlowState, setBaseReport, setIncomeInsights, webhookUrl, setDebugInfo, setLinkToken } =
     useAppContext();
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -108,15 +112,31 @@ const ReportPending: React.FC = () => {
       <div className="flex justify-center mb-4">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-mint-200 border-t-mint-600"></div>
       </div>
-      <h2 className="text-xl font-semibold text-gray-800 mb-2">
-        You're all done!
-      </h2>
-      <p className="text-sm text-gray-500 mb-1">
-        Your bank account is connected. Thanks for applying to Platypus Lending.
-      </p>
-      <p className="text-sm text-gray-400 mb-6">
-        We're generating your application review for our team now — this usually takes just a moment.
-      </p>
+      {isRefresh ? (
+        <>
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            Generating updated report
+          </h2>
+          <p className="text-sm text-gray-500 mb-1">
+            Simulating a returning borrower applying for a new loan.
+          </p>
+          <p className="text-sm text-gray-400 mb-6">
+            Plaid is fetching their latest financial data — this usually takes just a moment.
+          </p>
+        </>
+      ) : (
+        <>
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            You're all done!
+          </h2>
+          <p className="text-sm text-gray-500 mb-1">
+            Your bank account is connected. Thanks for applying to Platypus Lending.
+          </p>
+          <p className="text-sm text-gray-400 mb-6">
+            We're generating your application review for our team now — this usually takes just a moment.
+          </p>
+        </>
+      )}
 
       {pollingFallback && (
         <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-4 text-left">
