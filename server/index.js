@@ -2,8 +2,12 @@ import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
 import { loadStore } from "./store.js";
+import { normalizeWebhookUrl } from "./routes/tokens.js";
 
 dotenv.config();
+if (process.env.WEBHOOK_URL) {
+  process.env.WEBHOOK_URL = normalizeWebhookUrl(process.env.WEBHOOK_URL);
+}
 
 const PORT = process.env.APP_PORT || 3001;
 

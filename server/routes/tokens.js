@@ -22,7 +22,7 @@ router.post("/create_link_token", async (req, res, next) => {
       return;
     }
 
-    const webhookUrl = normalizeWebhookUrl(process.env.WEBHOOK_URL);
+    const webhookUrl = process.env.WEBHOOK_URL || "";
 
     const craOptions = {
       days_requested: 730,
@@ -84,7 +84,7 @@ router.post("/update_webhook", async (req, res, next) => {
 
 router.get("/webhook_url", async (req, res, next) => {
   try {
-    res.json({ webhookUrl: normalizeWebhookUrl(process.env.WEBHOOK_URL) });
+    res.json({ webhookUrl: process.env.WEBHOOK_URL || "" });
   } catch (error) {
     next(error);
   }
