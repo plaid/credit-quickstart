@@ -18,6 +18,7 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
     setCashflowInsights,
     setLendScore,
     setHomeLendingData,
+    setUserId,
     isHomeLending,
     webhookUrl,
     setDebugInfo,
@@ -43,6 +44,7 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
     setCashflowInsights(null);
     setLendScore(null);
     setHomeLendingData(null);
+    setUserId(null);
     setLinkToken(null);
     setDebugInfo("Debug info will appear here...");
     setFlowState(FlowState.WELCOME);

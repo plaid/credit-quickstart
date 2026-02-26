@@ -22,6 +22,7 @@ const ReportDashboard: React.FC = () => {
     setLendScore,
     setHomeLendingData,
     setIsHomeLending,
+    setUserId,
     setLinkToken,
     setDebugInfo,
     setApplicantData,
@@ -57,6 +58,7 @@ const ReportDashboard: React.FC = () => {
     setLendScore(null);
     setHomeLendingData(null);
     setIsHomeLending(false);
+    setUserId(null);
     setLinkToken(null);
     setApplicantData(null);
     setDebugInfo("Debug info will appear here...");

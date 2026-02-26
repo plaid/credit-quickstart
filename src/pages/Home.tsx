@@ -15,6 +15,7 @@ const Home: React.FC = () => {
   const {
     flowState,
     setFlowState,
+    setUserId,
     linkToken,
     setLinkToken,
     setApplicantData,
@@ -36,12 +37,13 @@ const Home: React.FC = () => {
     const restoreState = async () => {
       const [webhookData, status] = await Promise.all([
         callMyServer<{ webhookUrl: string }>("/server/tokens/webhook_url"),
-        callMyServer<{ hasUser: boolean; reportReady: boolean; homeLending: boolean }>("/server/users/status"),
+        callMyServer<{ hasUser: boolean; plaidUserId: string | null; reportReady: boolean; homeLending: boolean }>("/server/users/status"),
       ]);
 
       if (webhookData?.webhookUrl) setWebhookUrl(webhookData.webhookUrl);
 
       if (status?.hasUser) {
+        if (status.plaidUserId) setUserId(status.plaidUserId);
         if (status.homeLending) setIsHomeLending(true);
         const betaErrors: string[] = [];
         const logBetaError = (msg: string) => betaErrors.push(msg);
@@ -89,7 +91,7 @@ const Home: React.FC = () => {
 
     if (data.homeLending) setIsHomeLending(true);
 
-    const result = await callMyServer<{ status: string }>(
+    const result = await callMyServer<{ status: string; plaidUserId: string }>(
       "/server/users/create",
       true,
       data,
@@ -101,6 +103,7 @@ const Home: React.FC = () => {
       return;
     }
 
+    if (result.plaidUserId) setUserId(result.plaidUserId);
     setDebugInfo("User created. Generating Link token...");
 
     const tokenResult = await callMyServer<{ linkToken: string }>(

@@ -50,7 +50,7 @@ router.post("/create", async (req, res, next) => {
     await updateRecord({ clientUserId, plaidUserId, reportReady: false, homeLending: !!homeLending });
 
     console.log(`Created user with Plaid user_id: ${plaidUserId}`);
-    res.json({ status: "success" });
+    res.json({ status: "success", plaidUserId });
   } catch (error) {
     next(error);
   }
@@ -70,6 +70,7 @@ router.get("/status", async (req, res, next) => {
     const record = getRecord();
     res.json({
       hasUser: !!record.plaidUserId,
+      plaidUserId: record.plaidUserId,
       reportReady: record.reportReady,
       homeLending: !!record.homeLending,
     });

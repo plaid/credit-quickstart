@@ -13,6 +13,8 @@ import {
 interface AppContextType {
   flowState: FlowState;
   setFlowState: (state: FlowState) => void;
+  userId: string | null;
+  setUserId: (id: string | null) => void;
   linkToken: string | null;
   setLinkToken: (token: string | null) => void;
   applicantData: ApplicantFormData | null;
@@ -50,6 +52,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     else localStorage.removeItem("applicantData");
     setApplicantDataState(data);
   };
+  const [userId, setUserId] = useState<string | null>(null);
   const [baseReport, setBaseReport] = useState<BaseReportData | null>(null);
   const [incomeInsights, setIncomeInsights] = useState<IncomeInsightsData | null>(null);
   const [networkInsights, setNetworkInsights] = useState<NetworkInsightsData | null>(null);
@@ -65,6 +68,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       value={{
         flowState,
         setFlowState,
+        userId,
+        setUserId,
         linkToken,
         setLinkToken,
         applicantData,

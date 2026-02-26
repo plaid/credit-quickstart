@@ -3,7 +3,7 @@ import { useAppContext } from "../../context/AppContext";
 import { callMyServer } from "../../lib/utils";
 
 const DebugPanel: React.FC = () => {
-  const { debugInfo, webhookUrl, setWebhookUrl } = useAppContext();
+  const { debugInfo, webhookUrl, setWebhookUrl, userId } = useAppContext();
   const [isOpen, setIsOpen] = useState(false);
   const [newWebhookUrl, setNewWebhookUrl] = useState("");
   const [updateStatus, setUpdateStatus] = useState("");
@@ -49,6 +49,13 @@ const DebugPanel: React.FC = () => {
               rows={4}
             />
           </div>
+
+          {userId && (
+            <div className="mb-4">
+              <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">User ID</p>
+              <p className="text-xs text-yellow-300 font-mono">{userId}</p>
+            </div>
+          )}
 
           <div className="mb-4">
             <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">
