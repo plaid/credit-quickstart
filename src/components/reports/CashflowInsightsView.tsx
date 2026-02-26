@@ -1,5 +1,4 @@
 import { CashflowInsightsData } from "../../lib/types";
-import { showAsCurrency } from "../../lib/utils";
 
 function formatAttributeValue(value: unknown): string {
   if (value === null || value === undefined) return "—";
