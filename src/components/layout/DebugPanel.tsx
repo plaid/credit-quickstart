@@ -9,8 +9,11 @@ const DebugPanel: React.FC = () => {
   const [updateStatus, setUpdateStatus] = useState("");
 
   const handleUpdateWebhook = async () => {
-    const url = newWebhookUrl.trim();
+    let url = newWebhookUrl.trim();
     if (!url) return;
+    if (!url.includes("/server/receive_webhook")) {
+      url = url.replace(/\/$/, "") + "/server/receive_webhook";
+    }
     const result = await callMyServer<{ status: string; webhookUrl: string }>(
       "/server/tokens/update_webhook",
       true,
@@ -61,7 +64,7 @@ const DebugPanel: React.FC = () => {
                 type="text"
                 value={newWebhookUrl}
                 onChange={(e) => setNewWebhookUrl(e.target.value)}
-                placeholder="https://xxxx.ngrok-free.app/server/receive_webhook"
+                placeholder="https://xxxx.ngrok-free.app (path appended automatically)"
                 className="flex-1 bg-gray-800 text-green-400 p-2 rounded border border-gray-700 text-xs focus:outline-none focus:border-green-500"
               />
               <button
