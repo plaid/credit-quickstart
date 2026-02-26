@@ -71,7 +71,7 @@ const ReportDashboard: React.FC = () => {
     }`;
 
   return (
-    <div className="bg-white rounded-lg shadow-md w-full max-w-3xl">
+    <div className="bg-white rounded-lg shadow-md w-full max-w-5xl">
       <div className="bg-mint-700 text-white px-6 py-2 rounded-t-lg text-xs font-medium tracking-wide uppercase">
         Underwriter view — Platypus Lending internal
       </div>
@@ -136,6 +136,11 @@ const ReportDashboard: React.FC = () => {
           <button className={tabClass("income_insights")} onClick={() => setActiveTab("income_insights")}>
             Income Insights
           </button>
+          {isHomeLending && (
+            <button className={tabClass("home_lending")} onClick={() => setActiveTab("home_lending")}>
+              Home Lending
+            </button>
+          )}
           <button className={tabClass("network_insights")} onClick={() => setActiveTab("network_insights")}>
             Network Insights
           </button>
@@ -145,11 +150,6 @@ const ReportDashboard: React.FC = () => {
           <button className={tabClass("lend_score")} onClick={() => setActiveTab("lend_score")}>
             LendScore
           </button>
-          {isHomeLending && (
-            <button className={tabClass("home_lending")} onClick={() => setActiveTab("home_lending")}>
-              Home Lending
-            </button>
-          )}
         </nav>
       </div>
 
