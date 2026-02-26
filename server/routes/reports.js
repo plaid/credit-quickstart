@@ -76,6 +76,7 @@ router.get("/network_insights", async (req, res, next) => {
 
     const response = await plaidClient.craCheckReportNetworkInsightsGet({
       user_id: record.plaidUserId,
+      options: { network_insights_version: "NI1" },
     });
     res.json(response.data);
   } catch (error) {
@@ -93,6 +94,7 @@ router.get("/cashflow_insights", async (req, res, next) => {
 
     const response = await plaidClient.craCheckReportCashflowInsightsGet({
       user_id: record.plaidUserId,
+      options: { attributes_version: "CFI1" },
     });
     res.json(response.data);
   } catch (error) {
@@ -110,6 +112,7 @@ router.get("/lend_score", async (req, res, next) => {
 
     const response = await plaidClient.craCheckReportLendScoreGet({
       user_id: record.plaidUserId,
+      options: { lend_score_version: "LS1" },
     });
     res.json(response.data);
   } catch (error) {

@@ -43,13 +43,16 @@ const Home: React.FC = () => {
 
       if (status?.hasUser) {
         if (status.homeLending) setIsHomeLending(true);
+        const betaErrors: string[] = [];
+        const logBetaError = (msg: string) => betaErrors.push(msg);
+
         const [baseReport, incomeInsights, networkInsights, cashflowInsights, lendScore] =
           await Promise.all([
             callMyServer("/server/reports/base_report"),
             callMyServer("/server/reports/income_insights"),
-            callMyServer("/server/reports/network_insights"),
-            callMyServer("/server/reports/cashflow_insights"),
-            callMyServer("/server/reports/lend_score"),
+            callMyServer("/server/reports/network_insights", false, null, logBetaError),
+            callMyServer("/server/reports/cashflow_insights", false, null, logBetaError),
+            callMyServer("/server/reports/lend_score", false, null, logBetaError),
           ]);
         if (baseReport && incomeInsights) {
           setBaseReport(baseReport);
@@ -58,8 +61,11 @@ const Home: React.FC = () => {
           if (cashflowInsights) setCashflowInsights(cashflowInsights);
           if (lendScore) setLendScore(lendScore);
           if (status.homeLending) {
-            const homeLendingData = await callMyServer("/server/reports/home_lending");
+            const homeLendingData = await callMyServer("/server/reports/home_lending", false, null, logBetaError);
             if (homeLendingData) setHomeLendingData(homeLendingData);
+          }
+          if (betaErrors.length > 0) {
+            setDebugInfo(`Report restored.\n\nWarnings:\n${betaErrors.join("\n")}`);
           }
           setFlowState(FlowState.REPORT_READY);
         } else {

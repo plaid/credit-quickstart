@@ -49,13 +49,16 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
   };
 
   const fetchReports = async () => {
+    const betaErrors: string[] = [];
+    const logBetaError = (msg: string) => betaErrors.push(msg);
+
     const [baseReport, incomeInsights, networkInsights, cashflowInsights, lendScore] =
       await Promise.all([
         callMyServer("/server/reports/base_report"),
         callMyServer("/server/reports/income_insights"),
-        callMyServer("/server/reports/network_insights"),
-        callMyServer("/server/reports/cashflow_insights"),
-        callMyServer("/server/reports/lend_score"),
+        callMyServer("/server/reports/network_insights", false, null, logBetaError),
+        callMyServer("/server/reports/cashflow_insights", false, null, logBetaError),
+        callMyServer("/server/reports/lend_score", false, null, logBetaError),
       ]);
     if (baseReport == null || incomeInsights == null) {
       setDebugInfo("Report not ready yet — will retry.");
@@ -71,7 +74,10 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
       const homeLendingData = await callMyServer("/server/reports/home_lending");
       if (homeLendingData) setHomeLendingData(homeLendingData);
     }
-    setDebugInfo("Report loaded successfully.");
+    const statusMsg = betaErrors.length > 0
+      ? `Report loaded.\n\nWarnings:\n${betaErrors.join("\n")}`
+      : "Report loaded successfully.";
+    setDebugInfo(statusMsg);
     setFlowState(FlowState.REPORT_READY);
   };
 
