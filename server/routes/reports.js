@@ -157,6 +157,9 @@ router.post("/refresh", async (req, res, next) => {
       webhook: webhookUrl,
       days_requested: 730,
       consumer_report_permissible_purpose: "ACCOUNT_REVIEW_CREDIT",
+      cashflow_insights: { attributes_version: "CFI1" },
+      lend_score: { lend_score_version: "LS1" },
+      network_insights: { network_insights_version: "NI1" },
     });
     await updateRecord({ reportReady: false });
     res.json({ status: "success" });
