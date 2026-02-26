@@ -41,19 +41,12 @@ const LinkConnect: React.FC<LinkConnectProps> = ({ linkToken, onSuccess, onExit 
         We use Plaid to securely access your bank information to evaluate your
         loan application.
       </p>
-      {!ready ? (
-        <div className="flex items-center justify-center gap-2 text-gray-400">
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-mint-450"></div>
-          <span className="text-sm">Initializing secure connection...</span>
-        </div>
-      ) : (
-        <button
-          onClick={() => open()}
-          className="bg-mint-600 text-white py-2 px-6 rounded hover:bg-mint-500 font-medium"
-        >
-          Open Bank Connection
-        </button>
-      )}
+      <div className="flex items-center justify-center gap-2 text-gray-400">
+        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-mint-450"></div>
+        <span className="text-sm">
+          {ready ? "Opening secure connection..." : "Initializing secure connection..."}
+        </span>
+      </div>
     </div>
   );
 };
