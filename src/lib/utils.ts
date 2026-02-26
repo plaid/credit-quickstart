@@ -11,7 +11,7 @@ export const callMyServer = async function <T = any>(
     optionsObj.body = JSON.stringify(postData);
   }
   const response = await fetch(endpoint, optionsObj);
-  if (response.status === 500 || response.status === 400) {
+  if (!response.ok) {
     await handleServerError(response, onError);
     return null as unknown as T;
   }
