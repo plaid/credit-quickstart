@@ -59,6 +59,25 @@ export const formatCategory = function (raw: string): string {
   return words.join(" ");
 };
 
+export const formatAttributeValue = function (value: unknown): string {
+  if (value === null || value === undefined) return "—";
+  if (typeof value !== "object") return String(value);
+  try {
+    const obj = value as Record<string, unknown>;
+    const rawAmount = obj.amount;
+    if (typeof rawAmount === "number" || typeof rawAmount === "string") {
+      const num = typeof rawAmount === "string" ? parseFloat(rawAmount) : rawAmount;
+      if (!isNaN(num)) {
+        const currency = typeof obj.iso_currency_code === "string" ? obj.iso_currency_code : "USD";
+        return num.toLocaleString("en-US", { style: "currency", currency });
+      }
+    }
+    return JSON.stringify(value);
+  } catch {
+    return "—";
+  }
+};
+
 export const formatDate = function (dateStr: string): string {
   if (!dateStr) return "";
   const date = new Date(dateStr + "T00:00:00");

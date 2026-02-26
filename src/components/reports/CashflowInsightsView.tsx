@@ -1,23 +1,5 @@
 import { CashflowInsightsData } from "../../lib/types";
-
-function formatAttributeValue(value: unknown): string {
-  if (value === null || value === undefined) return "—";
-  if (typeof value !== "object") return String(value);
-  try {
-    const obj = value as Record<string, unknown>;
-    const rawAmount = obj.amount;
-    if (typeof rawAmount === "number" || typeof rawAmount === "string") {
-      const num = typeof rawAmount === "string" ? parseFloat(rawAmount) : rawAmount;
-      if (!isNaN(num)) {
-        const currency = typeof obj.iso_currency_code === "string" ? obj.iso_currency_code : "USD";
-        return num.toLocaleString("en-US", { style: "currency", currency });
-      }
-    }
-    return JSON.stringify(value);
-  } catch {
-    return "—";
-  }
-}
+import { formatAttributeValue } from "../../lib/utils";
 
 interface CashflowInsightsViewProps {
   data: CashflowInsightsData | null;
@@ -85,17 +67,13 @@ const CashflowInsightsView: React.FC<CashflowInsightsViewProps> = ({ data }) => 
       {attributeEntries.length > 0 && (
         <div>
           <h3 className="text-sm font-semibold text-gray-700 mb-3">Cashflow Attributes</h3>
-          <div className="rounded border border-gray-200 overflow-hidden">
-            <table className="table-fixed w-full text-xs font-mono">
-              <tbody className="divide-y divide-gray-100">
-                {attributeEntries.map(([key, value]) => (
-                  <tr key={key}>
-                    <td className="w-1/2 px-3 py-2 text-gray-500 break-all align-top">{key}</td>
-                    <td className="w-1/2 px-3 py-2 text-gray-800 break-all align-top">{formatAttributeValue(value)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="rounded border border-gray-200 divide-y divide-gray-100">
+            {attributeEntries.map(([key, value]) => (
+              <div key={key} className="flex gap-4 px-3 py-1.5">
+                <span className="font-mono text-xs text-gray-500 flex-1 min-w-0 break-all">{key}</span>
+                <span className="font-mono text-xs text-gray-800 shrink-0 text-right">{formatAttributeValue(value)}</span>
+              </div>
+            ))}
           </div>
         </div>
       )}
