@@ -75,6 +75,8 @@ Restart the server after updating `.env`. You can also update the webhook URL at
 
 To inspect incoming webhooks, open [http://localhost:4040](http://localhost:4040) in your browser. ngrok's inspector shows every request that came through the tunnel with full headers and body, and lets you replay them.
 
+If you don't configure webhooks, the app will poll for updates instead. For real application use cases, 
+
 ## Data storage
 
 User data is stored in `user_data.json` (created automatically, excluded from git). To start fresh, stop the server and delete the file, or click **Start Over** in the app.
