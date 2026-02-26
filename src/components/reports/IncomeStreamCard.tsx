@@ -25,7 +25,7 @@ const IncomeStreamCard: React.FC<IncomeStreamCardProps> = ({
           {employerName && (
             <p className="text-xs text-gray-500">{employerName}</p>
           )}
-          <div className="flex gap-3 mt-1">
+          <div className="flex items-center gap-3 mt-1">
             {category.toUpperCase() !== "UNKNOWN" && (
               <span className="text-xs bg-mint-100 text-mint-600 px-2 py-0.5 rounded-full">
                 {formatCategory(category)}
