@@ -52,16 +52,19 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
     const betaErrors: string[] = [];
     const logBetaError = (msg: string) => betaErrors.push(msg);
 
+    let coreError = "";
+    const logCoreError = (msg: string) => { coreError = msg; };
+
     const [baseReport, incomeInsights, networkInsights, cashflowInsights, lendScore] =
       await Promise.all([
-        callMyServer("/server/reports/base_report"),
-        callMyServer("/server/reports/income_insights"),
+        callMyServer("/server/reports/base_report", false, null, logCoreError),
+        callMyServer("/server/reports/income_insights", false, null, logCoreError),
         callMyServer("/server/reports/network_insights", false, null, logBetaError),
         callMyServer("/server/reports/cashflow_insights", false, null, logBetaError),
         callMyServer("/server/reports/lend_score", false, null, logBetaError),
       ]);
     if (baseReport == null || incomeInsights == null) {
-      setDebugInfo("Report not ready yet — will retry.");
+      setDebugInfo(`Report not ready yet — will retry.\n\n${coreError}`);
       return false;
     }
     if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);

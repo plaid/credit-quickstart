@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
-import { resetStore } from "./store.js";
+import { loadStore } from "./store.js";
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-await resetStore();
+await loadStore();
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
