@@ -1,14 +1,16 @@
 # Plaid Check — Consumer Report Sample App
 
-A sample loan application demonstrating Plaid's [Check Consumer Reports (CRA)](https://plaid.com/docs/check/) products: **Base Report** and **Income Insights**. Check Consumer Report is Plaid's recommended solution for most credit use cases.
+A sample loan application demonstrating Plaid's [Check Consumer Report (CRA)](https://plaid.com/docs/check/) GA products: **Base Report** and **Income Insights**. LendScore (beta), Network Insights (beta), and Cash Flow updates (beta) are not currently covered in this sample app.
+
+For Statements, see the regular multi-product [Quickstart](https://github.com/plaid/quickstart).
+
+Plaid Check Consumer Report is Plaid's recommended solution for most credit use cases. For the legacy Income product, see [income-sample](https://github.com/plaid/income-sample). 
 
 Built with React 19 + Vite + TypeScript on the frontend, and Node.js + Express on the backend.
 
-For the legacy Income product, see [income-sample](https://github.com/plaid/income-sample).
-
 ## Prerequisites
 
-Access to Consumer Report in Sandbox is not granted by default. Existing Plaid customers can [submit a product access request](https://dashboard.plaid.com/support/new/admin/account-administration/request-product-access) or contact their account manager. New customers can [contact Sales](https://plaid.com/contact/). Customers with Production access to Consumer Report will also automatically be granted Sandbox access.
+Access to Consumer Report in Sandbox is not granted by default. Existing Plaid customers can [submit a product access request](https://dashboard.plaid.com/support/new/admin/account-administration/request-product-access) or contact their account manager. New customers can [contact Sales](https://plaid.com/contact/). 
 
 ## Running the app
 
@@ -31,11 +33,11 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## Using the app
 
-Click **Apply for a Loan**, then click **Fill with test data** to pre-fill the form with sandbox-compatible values.
+Click **Apply for a Loan**, then complete the form. Due to Sandbox limitations, the phone number prefilled in Link will not necessarily match the phone number entered in this form; this will not occur in Production.
 
-When Plaid Link opens, use a **non-OAuth institution** (e.g. First Platypus Bank) and sandbox credentials that include income data. Income Insights works by analyzing recurring income patterns in transaction history — most sandbox users don't have these, so the Income Insights tab will be empty or unhelpful. The credentials below are specifically designed with income streams that make the report meaningful. Use one of these instead:
+When Plaid Link opens, use a **non-OAuth institution** (e.g. First Platypus Bank) and the special Sandbox income credentials. Income Insights works by analyzing recurring income patterns in transaction history — the default `user_good` test user doesn't have those, so the Income Insights tab for that user will be empty or unhelpful. The credentials below are specifically designed with income streams that make the report meaningful. Use one of these instead:
 
-> **Important:** In Plaid Link, connect a new bank rather than using a saved account — that way you can enter the sandbox credentials above.
+> **Important:** In Plaid Link, if you're going through the returning user flow, connect a new bank rather than using a saved account — that way you can enter the Sandbox credentials above.
 
 | Username | Password | Description |
 |---|---|---|
@@ -46,14 +48,14 @@ When Plaid Link opens, use a **non-OAuth institution** (e.g. First Platypus Bank
 | `user_credit_profile_good` | any | Neutral cash flow, multiple gig economy income streams |
 | `user_credit_profile_poor` | any | Net loss cash flow, no consistent income source |
 
-After connecting, the app waits for a webhook from Plaid indicating the report is ready. Without webhooks configured (see below), use the **Check Report Status** button on the pending screen to manually poll for the report.
+After connecting, the app waits for a webhook from Plaid indicating the report is ready. Without webhooks configured (see below), it will manually poll for the report.
 
 Once the report is ready, you'll see:
 - **Base Report tab** — account balances and transaction history
-- **Income Insights tab** — detected income sources and projected monthly income
+- **Income Insights tab** — detected income sources and estimated monthly income
 - **Download PDF Report** button for the full consumer report PDF
-
-Click **Refresh Report** to trigger a new report generation for the same user without re-running Link — this demonstrates the [`/cra/check_report/create`](https://plaid.com/docs/api/products/check/#cracheckreportcreate) refresh flow. In sandbox, the refreshed report won't show new data since there's no new activity to pick up. Click **Start Over** to reset and run a fresh flow.
+- **Simulate new loan application** - triggers a new report generation for the same user without re-running Link. This demonstrates the [`/cra/check_report/create`](https://plaid.com/docs/api/products/check/#cracheckreportcreate) refresh flow. In Sandbox, the refreshed report won't show new data since there's no new activity to pick up. 
+- **Start over** - resets the app 
 
 ## Receiving webhooks
 
@@ -63,7 +65,7 @@ Plaid sends a `USER_CHECK_REPORT_READY` webhook when your report is generated. T
 ngrok http 8002
 ```
 
-Copy the forwarding URL into your `.env` file:
+Copy the forwarding URL into your `.env` file, and make sure to append `/server/receive_webhook` to the end:
 
 ```
 WEBHOOK_URL=https://abc123.ngrok-free.app/server/receive_webhook
