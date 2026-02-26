@@ -2,6 +2,7 @@ import express from "express";
 import plaidClient from "../plaid.js";
 import { getRecord, updateRecord } from "../store.js";
 import { normalizeWebhookUrl } from "./tokens.js";
+import { normalizeWebhookUrl } from "./tokens.js";
 
 const router = express.Router();
 
