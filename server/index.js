@@ -2,11 +2,10 @@ import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
 import { loadStore } from "./store.js";
-import { normalizeWebhookUrl } from "./routes/tokens.js";
 
 dotenv.config();
-if (process.env.WEBHOOK_URL) {
-  process.env.WEBHOOK_URL = normalizeWebhookUrl(process.env.WEBHOOK_URL);
+if (process.env.WEBHOOK_URL && !process.env.WEBHOOK_URL.includes("/server/receive_webhook")) {
+  process.env.WEBHOOK_URL = process.env.WEBHOOK_URL.replace(/\/$/, "") + "/server/receive_webhook";
 }
 
 const PORT = process.env.APP_PORT || 3001;
