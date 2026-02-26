@@ -48,7 +48,7 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
     setFlowState(FlowState.WELCOME);
   };
 
-  const fetchReports = async (): Promise<boolean> => {
+  const fetchReports = async () => {
     const betaErrors: string[] = [];
     const logBetaError = (msg: string) => betaErrors.push(msg);
 
@@ -82,7 +82,6 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
       : "Report loaded successfully.";
     setDebugInfo(statusMsg);
     setFlowState(FlowState.REPORT_READY);
-    return true;
   };
 
   const startPolling = (reason: string) => {
@@ -116,10 +115,7 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
 
     const handleReportReady = async () => {
       setDebugInfo("Report is ready! Fetching data...");
-      const success = await fetchReports();
-      if (!success && !pollIntervalRef.current) {
-        startPolling("Report not immediately available — polling every 5s.");
-      }
+      await fetchReports();
     };
 
     es.addEventListener("connected", handleConnected);
