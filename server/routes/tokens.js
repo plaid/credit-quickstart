@@ -16,6 +16,15 @@ router.post("/create_link_token", async (req, res, next) => {
 
     const craOptions = {
       days_requested: 730,
+      cashflow_insights: {
+        attributes_version: "CFI1",
+      },
+      lend_score: {
+        lend_score_version: "LS1",
+      },
+      network_insights: {
+        network_insights_version: "NI1",
+      },
     };
 
     if (record.homeLending) {

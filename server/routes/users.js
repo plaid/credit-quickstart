@@ -12,48 +12,36 @@ router.post("/create", async (req, res, next) => {
 
     const clientUserId = "user_" + uuidv4();
 
-    const userCreateRequest = {
-      client_user_id: clientUserId,
-      identity: {
-        name: {
-          given_name: firstName,
-          family_name: lastName,
-        },
-        date_of_birth: dateOfBirth,
-        emails: [{ data: email, primary: true }],
-        phone_numbers: [{ data: phoneNumber, primary: true }],
-        addresses: [
-          {
-            street_1: address.street,
-            city: address.city,
-            region: address.state,
-            country: "US",
-            postal_code: address.postalCode,
-            primary: true,
-          },
-        ],
+    const identityObj = {
+      name: {
+        given_name: firstName,
+        family_name: lastName,
       },
+      date_of_birth: dateOfBirth,
+      emails: [{ data: email, primary: true }],
+      phone_numbers: [{ data: phoneNumber, primary: true }],
+      addresses: [
+        {
+          street_1: address.street,
+          city: address.city,
+          region: address.state,
+          country: "US",
+          postal_code: address.postalCode,
+          primary: true,
+        },
+      ],
     };
 
     if (homeLending && ssn) {
-      userCreateRequest.consumer_report_user_identity = {
-        first_name: firstName,
-        last_name: lastName,
-        phone_numbers: [phoneNumber],
-        emails: [email],
-        ssn_full: ssn,
-        date_of_birth: dateOfBirth,
-        addresses: [
-          {
-            street: address.street,
-            city: address.city,
-            region: address.state,
-            country: "US",
-            postal_code: address.postalCode,
-          },
-        ],
-      };
+      // Strip formatting and pass SSN via id_numbers for home lending / GSE reports
+      const ssnDigits = ssn.replace(/\D/g, "");
+      identityObj.id_numbers = [{ value: ssnDigits, type: "us_ssn" }];
     }
+
+    const userCreateRequest = {
+      client_user_id: clientUserId,
+      identity: identityObj,
+    };
 
     const userCreateResponse = await plaidClient.userCreate(userCreateRequest);
 
