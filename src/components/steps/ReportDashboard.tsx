@@ -71,7 +71,7 @@ const ReportDashboard: React.FC = () => {
     }`;
 
   return (
-    <div className="bg-white rounded-lg shadow-md w-full max-w-5xl">
+    <div className="bg-white rounded-lg shadow-md w-full max-w-4xl">
       <div className="bg-mint-700 text-white px-6 py-2 rounded-t-lg text-xs font-medium tracking-wide uppercase">
         Underwriter view — Platypus Lending internal
       </div>

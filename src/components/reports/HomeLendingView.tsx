@@ -93,13 +93,19 @@ const HomeLendingView: React.FC<HomeLendingViewProps> = ({ data }) => {
       {attributeEntries.length > 0 && (
         <div>
           <h3 className="text-sm font-semibold text-gray-700 mb-3">VOA Attributes</h3>
-          <div className="rounded border border-gray-200 divide-y divide-gray-100">
-            {attributeEntries.map(([key, value]) => (
-              <div key={key} className="flex items-start gap-4 px-3 py-2">
-                <span className="font-mono text-xs text-gray-500 w-1/2 shrink-0 break-all">{key}</span>
-                <span className="font-mono text-xs text-gray-800 break-all">{String(value)}</span>
-              </div>
-            ))}
+          <div className="rounded border border-gray-200 overflow-hidden">
+            <table className="table-fixed w-full text-xs font-mono">
+              <tbody className="divide-y divide-gray-100">
+                {attributeEntries.map(([key, value]) => (
+                  <tr key={key}>
+                    <td className="w-1/2 px-3 py-2 text-gray-500 break-all align-top">{key}</td>
+                    <td className="w-1/2 px-3 py-2 text-gray-800 break-all align-top">
+                      {value !== null && value !== undefined && typeof value === "object" ? JSON.stringify(value) : String(value)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
