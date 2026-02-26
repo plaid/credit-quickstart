@@ -19,7 +19,7 @@ const TEST_DATA: ApplicantFormData = {
     postalCode: "94105",
   },
   ssn: "123-45-6789",
-  homeLending: false,
+  homeLending: true,
 };
 
 const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, isLoading }) => {
@@ -55,7 +55,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, isLoading }) =>
   };
 
   const handleFillTestData = () => {
-    setFormData({ ...TEST_DATA, homeLending: formData.homeLending, ssn: formData.homeLending ? TEST_DATA.ssn : formData.ssn });
+    setFormData(TEST_DATA);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
