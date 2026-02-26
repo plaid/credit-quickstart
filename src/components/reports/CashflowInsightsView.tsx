@@ -6,8 +6,13 @@ function formatAttributeValue(value: unknown): string {
   if (typeof value !== "object") return String(value);
   try {
     const obj = value as Record<string, unknown>;
-    if (typeof obj.amount === "number") {
-      return showAsCurrency(obj.amount);
+    const rawAmount = obj.amount;
+    if (typeof rawAmount === "number" || typeof rawAmount === "string") {
+      const num = typeof rawAmount === "string" ? parseFloat(rawAmount) : rawAmount;
+      if (!isNaN(num)) {
+        const currency = typeof obj.iso_currency_code === "string" ? obj.iso_currency_code : "USD";
+        return num.toLocaleString("en-US", { style: "currency", currency });
+      }
     }
     return JSON.stringify(value);
   } catch {
