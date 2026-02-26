@@ -4,6 +4,16 @@ import { getRecord } from "../store.js";
 
 const router = express.Router();
 
+export const normalizeWebhookUrl = (url) => {
+  if (!url) return "";
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+  if (!trimmed.includes("/server/receive_webhook")) {
+    return trimmed.replace(/\/$/, "") + "/server/receive_webhook";
+  }
+  return trimmed;
+};
+
 router.post("/create_link_token", async (req, res, next) => {
   try {
     const record = getRecord();
@@ -12,7 +22,7 @@ router.post("/create_link_token", async (req, res, next) => {
       return;
     }
 
-    const webhookUrl = (process.env.WEBHOOK_URL || "").trim();
+    const webhookUrl = normalizeWebhookUrl(process.env.WEBHOOK_URL);
 
     const craOptions = {
       days_requested: 730,
@@ -64,8 +74,9 @@ router.post("/update_webhook", async (req, res, next) => {
       res.status(400).json({ error: "newUrl is required" });
       return;
     }
-    process.env.WEBHOOK_URL = newUrl;
-    res.json({ status: "success", webhookUrl: newUrl });
+    const normalized = normalizeWebhookUrl(newUrl);
+    process.env.WEBHOOK_URL = normalized;
+    res.json({ status: "success", webhookUrl: normalized });
   } catch (error) {
     next(error);
   }
@@ -73,7 +84,7 @@ router.post("/update_webhook", async (req, res, next) => {
 
 router.get("/webhook_url", async (req, res, next) => {
   try {
-    res.json({ webhookUrl: process.env.WEBHOOK_URL || "" });
+    res.json({ webhookUrl: normalizeWebhookUrl(process.env.WEBHOOK_URL) });
   } catch (error) {
     next(error);
   }
