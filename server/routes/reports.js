@@ -66,6 +66,80 @@ router.get("/pdf", async (req, res, next) => {
   }
 });
 
+router.get("/network_insights", async (req, res, next) => {
+  try {
+    const record = getRecord();
+    if (!record.plaidUserId) {
+      res.status(400).json({ error: "No user found." });
+      return;
+    }
+
+    const response = await plaidClient.craCheckReportNetworkInsightsGet({
+      user_id: record.plaidUserId,
+    });
+    res.json(response.data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/cashflow_insights", async (req, res, next) => {
+  try {
+    const record = getRecord();
+    if (!record.plaidUserId) {
+      res.status(400).json({ error: "No user found." });
+      return;
+    }
+
+    const response = await plaidClient.craCheckReportCashflowInsightsGet({
+      user_id: record.plaidUserId,
+    });
+    res.json(response.data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/lend_score", async (req, res, next) => {
+  try {
+    const record = getRecord();
+    if (!record.plaidUserId) {
+      res.status(400).json({ error: "No user found." });
+      return;
+    }
+
+    const response = await plaidClient.craCheckReportLendScoreGet({
+      user_id: record.plaidUserId,
+    });
+    res.json(response.data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/home_lending", async (req, res, next) => {
+  try {
+    const record = getRecord();
+    if (!record.plaidUserId) {
+      res.status(400).json({ error: "No user found." });
+      return;
+    }
+
+    if (!record.homeLending) {
+      res.status(400).json({ error: "Not a home lending application." });
+      return;
+    }
+
+    const response = await plaidClient.craCheckReportVerificationGet({
+      user_id: record.plaidUserId,
+      reports_requested: ["VOA"],
+    });
+    res.json(response.data);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post("/refresh", async (req, res, next) => {
   try {
     const record = getRecord();

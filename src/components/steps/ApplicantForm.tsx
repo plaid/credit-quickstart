@@ -18,6 +18,8 @@ const TEST_DATA: ApplicantFormData = {
     state: "CA",
     postalCode: "94105",
   },
+  ssn: "123-45-6789",
+  homeLending: false,
 };
 
 const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, isLoading }) => {
@@ -33,16 +35,20 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, isLoading }) =>
       state: "",
       postalCode: "",
     },
+    ssn: "",
+    homeLending: false,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     if (name.startsWith("address.")) {
       const field = name.split(".")[1];
       setFormData((prev) => ({
         ...prev,
         address: { ...prev.address, [field]: value },
       }));
+    } else if (type === "checkbox") {
+      setFormData((prev) => ({ ...prev, [name]: checked }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -181,6 +187,39 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, isLoading }) =>
             />
           </div>
         </div>
+
+        <div className="border-t border-gray-200 pt-4">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              name="homeLending"
+              checked={!!formData.homeLending}
+              onChange={handleChange}
+              className="h-4 w-4 rounded border-gray-300 text-mint-600 focus:ring-mint-500"
+            />
+            <span className="text-sm font-medium text-gray-700">Home lending application (VOA)</span>
+          </label>
+          <p className="text-xs text-gray-400 mt-1 ml-6">
+            Enables Verification of Assets report for GSE sharing (Fannie Mae, Freddie Mac). Requires full SSN.
+          </p>
+        </div>
+
+        {formData.homeLending && (
+          <div>
+            <label className={labelClass}>Social Security Number</label>
+            <input
+              className={inputClass}
+              name="ssn"
+              type="text"
+              placeholder="123-45-6789"
+              value={formData.ssn ?? ""}
+              onChange={handleChange}
+              autoComplete="off"
+              required={!!formData.homeLending}
+            />
+            <p className="text-xs text-gray-400 mt-1">Required for GSE report sharing. Format: XXX-XX-XXXX</p>
+          </div>
+        )}
 
         <button
           type="submit"

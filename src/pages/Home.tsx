@@ -22,6 +22,11 @@ const Home: React.FC = () => {
     setWebhookUrl,
     setBaseReport,
     setIncomeInsights,
+    setNetworkInsights,
+    setCashflowInsights,
+    setLendScore,
+    setHomeLendingData,
+    setIsHomeLending,
   } = useAppContext();
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [linkExited, setLinkExited] = useState(false);
@@ -31,19 +36,31 @@ const Home: React.FC = () => {
     const restoreState = async () => {
       const [webhookData, status] = await Promise.all([
         callMyServer<{ webhookUrl: string }>("/server/tokens/webhook_url"),
-        callMyServer<{ hasUser: boolean; reportReady: boolean }>("/server/users/status"),
+        callMyServer<{ hasUser: boolean; reportReady: boolean; homeLending: boolean }>("/server/users/status"),
       ]);
 
       if (webhookData?.webhookUrl) setWebhookUrl(webhookData.webhookUrl);
 
       if (status?.hasUser) {
-        const [baseReport, incomeInsights] = await Promise.all([
-          callMyServer("/server/reports/base_report"),
-          callMyServer("/server/reports/income_insights"),
-        ]);
+        if (status.homeLending) setIsHomeLending(true);
+        const [baseReport, incomeInsights, networkInsights, cashflowInsights, lendScore] =
+          await Promise.all([
+            callMyServer("/server/reports/base_report"),
+            callMyServer("/server/reports/income_insights"),
+            callMyServer("/server/reports/network_insights"),
+            callMyServer("/server/reports/cashflow_insights"),
+            callMyServer("/server/reports/lend_score"),
+          ]);
         if (baseReport && incomeInsights) {
           setBaseReport(baseReport);
           setIncomeInsights(incomeInsights);
+          if (networkInsights) setNetworkInsights(networkInsights);
+          if (cashflowInsights) setCashflowInsights(cashflowInsights);
+          if (lendScore) setLendScore(lendScore);
+          if (status.homeLending) {
+            const homeLendingData = await callMyServer("/server/reports/home_lending");
+            if (homeLendingData) setHomeLendingData(homeLendingData);
+          }
           setFlowState(FlowState.REPORT_READY);
         } else {
           setFlowState(FlowState.REPORT_PENDING);
@@ -52,7 +69,7 @@ const Home: React.FC = () => {
       setIsInitializing(false);
     };
     restoreState();
-  }, [setWebhookUrl, setFlowState, setBaseReport, setIncomeInsights]);
+  }, [setWebhookUrl, setFlowState, setBaseReport, setIncomeInsights, setNetworkInsights, setCashflowInsights, setLendScore, setHomeLendingData, setIsHomeLending]);
 
   const handleApplyClicked = () => {
     setFlowState(FlowState.APPLICANT_FORM);
@@ -63,6 +80,8 @@ const Home: React.FC = () => {
     setIsCreatingUser(true);
     setApplicantData(data);
     setDebugInfo("Creating your Plaid user...");
+
+    if (data.homeLending) setIsHomeLending(true);
 
     const result = await callMyServer<{ status: string }>(
       "/server/users/create",

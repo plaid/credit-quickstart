@@ -7,12 +7,12 @@ const router = express.Router();
 
 router.post("/create", async (req, res, next) => {
   try {
-    const { firstName, lastName, dateOfBirth, email, phoneNumber, address } =
+    const { firstName, lastName, dateOfBirth, email, phoneNumber, address, ssn, homeLending } =
       req.body;
 
     const clientUserId = "user_" + uuidv4();
 
-    const userCreateResponse = await plaidClient.userCreate({
+    const userCreateRequest = {
       client_user_id: clientUserId,
       identity: {
         name: {
@@ -33,11 +33,33 @@ router.post("/create", async (req, res, next) => {
           },
         ],
       },
-    });
+    };
+
+    if (homeLending && ssn) {
+      userCreateRequest.consumer_report_user_identity = {
+        first_name: firstName,
+        last_name: lastName,
+        phone_numbers: [phoneNumber],
+        emails: [email],
+        ssn_full: ssn,
+        date_of_birth: dateOfBirth,
+        addresses: [
+          {
+            street: address.street,
+            city: address.city,
+            region: address.state,
+            country: "US",
+            postal_code: address.postalCode,
+          },
+        ],
+      };
+    }
+
+    const userCreateResponse = await plaidClient.userCreate(userCreateRequest);
 
     const plaidUserId = userCreateResponse.data.user_id;
 
-    await updateRecord({ clientUserId, plaidUserId, reportReady: false });
+    await updateRecord({ clientUserId, plaidUserId, reportReady: false, homeLending: !!homeLending });
 
     console.log(`Created user with Plaid user_id: ${plaidUserId}`);
     res.json({ status: "success" });
@@ -61,6 +83,7 @@ router.get("/status", async (req, res, next) => {
     res.json({
       hasUser: !!record.plaidUserId,
       reportReady: record.reportReady,
+      homeLending: !!record.homeLending,
     });
   } catch (error) {
     next(error);

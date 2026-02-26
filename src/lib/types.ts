@@ -10,6 +10,8 @@ export interface ApplicantFormData {
     state: string;
     postalCode: string;
   };
+  ssn?: string;
+  homeLending?: boolean;
 }
 
 export interface BaseReportOwner {
@@ -100,5 +102,68 @@ export interface IncomeInsightsData {
         bank_income_streams?: IncomeStream[];
       }>;
     }>;
+  };
+}
+
+export interface NetworkInsightsData {
+  report?: {
+    report_id?: string;
+    generated_time?: string;
+    network_attributes?: Record<string, unknown>;
+    items?: Array<{
+      institution_id?: string;
+      institution_name?: string;
+      item_id?: string;
+    }>;
+  };
+}
+
+export interface CashflowInsightsData {
+  report?: {
+    report_id?: string;
+    generated_time?: string;
+    plaid_check_score?: {
+      score?: number | null;
+      reason_codes?: string[];
+    } | null;
+    attributes?: Record<string, unknown>;
+  };
+}
+
+export interface LendScoreData {
+  report?: {
+    report_id?: string;
+    generated_time?: string;
+    lend_score?: {
+      score?: number | null;
+      reason_codes?: string[];
+      error_reason?: string | null;
+    } | null;
+  };
+}
+
+export interface HomeLendingData {
+  report?: {
+    report_id?: string;
+    client_report_id?: string | null;
+    voa?: {
+      generated_time?: string;
+      days_requested?: number;
+      items?: Array<{
+        item_id?: string;
+        accounts?: Array<{
+          account_id?: string;
+          name?: string;
+          official_name?: string | null;
+          type?: string;
+          subtype?: string | null;
+          balances?: {
+            available?: number | null;
+            current?: number | null;
+          };
+        }>;
+      }>;
+      attributes?: Record<string, unknown>;
+    } | null;
   };
 }

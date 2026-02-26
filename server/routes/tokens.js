@@ -14,16 +14,26 @@ router.post("/create_link_token", async (req, res, next) => {
 
     const webhookUrl = (process.env.WEBHOOK_URL || "").trim();
 
+    const craOptions = {
+      days_requested: 730,
+    };
+
+    if (record.homeLending) {
+      craOptions.base_report = {
+        gse_options: {
+          report_types: ["VOA"],
+        },
+      };
+    }
+
     const linkTokenRequest = {
       user_id: record.plaidUserId,
       user: { client_user_id: record.clientUserId },
       client_name: "Platypus Lending",
-      products: ["cra_base_report"],
+      products: ["cra_base_report", "cra_network_insights", "cra_cashflow_insights", "cra_lend_score"],
       country_codes: ["US"],
       language: "en",
-      cra_options: {
-        days_requested: 730,
-      },
+      cra_options: craOptions,
       consumer_report_permissible_purpose: "ACCOUNT_REVIEW_CREDIT",
     };
 

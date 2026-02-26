@@ -10,8 +10,19 @@ interface ReportPendingProps {
 }
 
 const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
-  const { setFlowState, setBaseReport, setIncomeInsights, webhookUrl, setDebugInfo, setLinkToken } =
-    useAppContext();
+  const {
+    setFlowState,
+    setBaseReport,
+    setIncomeInsights,
+    setNetworkInsights,
+    setCashflowInsights,
+    setLendScore,
+    setHomeLendingData,
+    isHomeLending,
+    webhookUrl,
+    setDebugInfo,
+    setLinkToken,
+  } = useAppContext();
   const eventSourceRef = useRef<EventSource | null>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const webhookUrlRef = useRef(webhookUrl);
@@ -28,16 +39,24 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
     await callMyServer("/server/users/reset", true, {});
     setBaseReport(null);
     setIncomeInsights(null);
+    setNetworkInsights(null);
+    setCashflowInsights(null);
+    setLendScore(null);
+    setHomeLendingData(null);
     setLinkToken(null);
     setDebugInfo("Debug info will appear here...");
     setFlowState(FlowState.WELCOME);
   };
 
   const fetchReports = async () => {
-    const [baseReport, incomeInsights] = await Promise.all([
-      callMyServer("/server/reports/base_report"),
-      callMyServer("/server/reports/income_insights"),
-    ]);
+    const [baseReport, incomeInsights, networkInsights, cashflowInsights, lendScore] =
+      await Promise.all([
+        callMyServer("/server/reports/base_report"),
+        callMyServer("/server/reports/income_insights"),
+        callMyServer("/server/reports/network_insights"),
+        callMyServer("/server/reports/cashflow_insights"),
+        callMyServer("/server/reports/lend_score"),
+      ]);
     if (baseReport == null || incomeInsights == null) {
       setDebugInfo("Report not ready yet — will retry.");
       return;
@@ -45,6 +64,13 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
     if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     setBaseReport(baseReport);
     setIncomeInsights(incomeInsights);
+    if (networkInsights) setNetworkInsights(networkInsights);
+    if (cashflowInsights) setCashflowInsights(cashflowInsights);
+    if (lendScore) setLendScore(lendScore);
+    if (isHomeLending) {
+      const homeLendingData = await callMyServer("/server/reports/home_lending");
+      if (homeLendingData) setHomeLendingData(homeLendingData);
+    }
     setDebugInfo("Report loaded successfully.");
     setFlowState(FlowState.REPORT_READY);
   };

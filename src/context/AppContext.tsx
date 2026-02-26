@@ -1,6 +1,14 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { FlowState } from "../lib/constants";
-import { ApplicantFormData, BaseReportData, IncomeInsightsData } from "../lib/types";
+import {
+  ApplicantFormData,
+  BaseReportData,
+  IncomeInsightsData,
+  NetworkInsightsData,
+  CashflowInsightsData,
+  LendScoreData,
+  HomeLendingData,
+} from "../lib/types";
 
 interface AppContextType {
   flowState: FlowState;
@@ -13,6 +21,16 @@ interface AppContextType {
   setBaseReport: (data: BaseReportData | null) => void;
   incomeInsights: IncomeInsightsData | null;
   setIncomeInsights: (data: IncomeInsightsData | null) => void;
+  networkInsights: NetworkInsightsData | null;
+  setNetworkInsights: (data: NetworkInsightsData | null) => void;
+  cashflowInsights: CashflowInsightsData | null;
+  setCashflowInsights: (data: CashflowInsightsData | null) => void;
+  lendScore: LendScoreData | null;
+  setLendScore: (data: LendScoreData | null) => void;
+  homeLendingData: HomeLendingData | null;
+  setHomeLendingData: (data: HomeLendingData | null) => void;
+  isHomeLending: boolean;
+  setIsHomeLending: (v: boolean) => void;
   debugInfo: string;
   setDebugInfo: (info: string) => void;
   webhookUrl: string;
@@ -34,6 +52,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
   const [baseReport, setBaseReport] = useState<BaseReportData | null>(null);
   const [incomeInsights, setIncomeInsights] = useState<IncomeInsightsData | null>(null);
+  const [networkInsights, setNetworkInsights] = useState<NetworkInsightsData | null>(null);
+  const [cashflowInsights, setCashflowInsights] = useState<CashflowInsightsData | null>(null);
+  const [lendScore, setLendScore] = useState<LendScoreData | null>(null);
+  const [homeLendingData, setHomeLendingData] = useState<HomeLendingData | null>(null);
+  const [isHomeLending, setIsHomeLending] = useState<boolean>(false);
   const [debugInfo, setDebugInfo] = useState<string>("Debug info will appear here...");
   const [webhookUrl, setWebhookUrl] = useState<string>("");
 
@@ -50,6 +73,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setBaseReport,
         incomeInsights,
         setIncomeInsights,
+        networkInsights,
+        setNetworkInsights,
+        cashflowInsights,
+        setCashflowInsights,
+        lendScore,
+        setLendScore,
+        homeLendingData,
+        setHomeLendingData,
+        isHomeLending,
+        setIsHomeLending,
         debugInfo,
         setDebugInfo,
         webhookUrl,

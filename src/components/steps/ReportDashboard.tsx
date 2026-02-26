@@ -4,13 +4,35 @@ import { FlowState } from "../../lib/constants";
 import { callMyServer, formatPhone } from "../../lib/utils";
 import BaseReportView from "../reports/BaseReportView";
 import IncomeInsightsView from "../reports/IncomeInsightsView";
+import NetworkInsightsView from "../reports/NetworkInsightsView";
+import CashflowInsightsView from "../reports/CashflowInsightsView";
+import LendScoreView from "../reports/LendScoreView";
+import HomeLendingView from "../reports/HomeLendingView";
 import ReportPdfButton from "../reports/ReportPdfButton";
 
-type ReportTab = "base_report" | "income_insights";
+type ReportTab = "base_report" | "income_insights" | "network_insights" | "cashflow_insights" | "lend_score" | "home_lending";
 
 const ReportDashboard: React.FC = () => {
-  const { setFlowState, setBaseReport, setIncomeInsights, setLinkToken, setDebugInfo, setApplicantData, baseReport, applicantData } =
-    useAppContext();
+  const {
+    setFlowState,
+    setBaseReport,
+    setIncomeInsights,
+    setNetworkInsights,
+    setCashflowInsights,
+    setLendScore,
+    setHomeLendingData,
+    setIsHomeLending,
+    setLinkToken,
+    setDebugInfo,
+    setApplicantData,
+    baseReport,
+    applicantData,
+    networkInsights,
+    cashflowInsights,
+    lendScore,
+    homeLendingData,
+    isHomeLending,
+  } = useAppContext();
 
   const owner = baseReport?.report?.items
     ?.flatMap((item) => item.accounts ?? [])
@@ -30,6 +52,11 @@ const ReportDashboard: React.FC = () => {
     await callMyServer("/server/users/reset", true, {});
     setBaseReport(null);
     setIncomeInsights(null);
+    setNetworkInsights(null);
+    setCashflowInsights(null);
+    setLendScore(null);
+    setHomeLendingData(null);
+    setIsHomeLending(false);
     setLinkToken(null);
     setApplicantData(null);
     setDebugInfo("Debug info will appear here...");
@@ -37,7 +64,7 @@ const ReportDashboard: React.FC = () => {
   };
 
   const tabClass = (tab: ReportTab) =>
-    `py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
+    `py-2 px-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
       activeTab === tab
         ? "border-mint-450 text-mint-600"
         : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -102,25 +129,37 @@ const ReportDashboard: React.FC = () => {
         </div>
       )}
       <div className="border-b border-gray-200 px-6">
-        <nav className="flex gap-4">
-          <button
-            className={tabClass("base_report")}
-            onClick={() => setActiveTab("base_report")}
-          >
+        <nav className="flex gap-1 overflow-x-auto">
+          <button className={tabClass("base_report")} onClick={() => setActiveTab("base_report")}>
             Base Report
           </button>
-          <button
-            className={tabClass("income_insights")}
-            onClick={() => setActiveTab("income_insights")}
-          >
+          <button className={tabClass("income_insights")} onClick={() => setActiveTab("income_insights")}>
             Income Insights
           </button>
+          <button className={tabClass("network_insights")} onClick={() => setActiveTab("network_insights")}>
+            Network Insights
+          </button>
+          <button className={tabClass("cashflow_insights")} onClick={() => setActiveTab("cashflow_insights")}>
+            Cashflow Insights
+          </button>
+          <button className={tabClass("lend_score")} onClick={() => setActiveTab("lend_score")}>
+            LendScore
+          </button>
+          {isHomeLending && (
+            <button className={tabClass("home_lending")} onClick={() => setActiveTab("home_lending")}>
+              Home Lending
+            </button>
+          )}
         </nav>
       </div>
 
       <div className="p-6">
         {activeTab === "base_report" && <BaseReportView />}
         {activeTab === "income_insights" && <IncomeInsightsView />}
+        {activeTab === "network_insights" && <NetworkInsightsView data={networkInsights} />}
+        {activeTab === "cashflow_insights" && <CashflowInsightsView data={cashflowInsights} />}
+        {activeTab === "lend_score" && <LendScoreView data={lendScore} />}
+        {activeTab === "home_lending" && <HomeLendingView data={homeLendingData} />}
       </div>
     </div>
   );

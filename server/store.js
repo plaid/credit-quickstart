@@ -6,6 +6,7 @@ const DEFAULT_RECORD = {
   clientUserId: null,
   plaidUserId: null,
   reportReady: false,
+  homeLending: false,
 };
 
 let userRecord = { ...DEFAULT_RECORD };
