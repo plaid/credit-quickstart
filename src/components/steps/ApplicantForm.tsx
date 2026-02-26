@@ -55,7 +55,7 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, isLoading }) =>
   };
 
   const handleFillTestData = () => {
-    setFormData(TEST_DATA);
+    setFormData({ ...TEST_DATA, homeLending: formData.homeLending, ssn: formData.homeLending ? TEST_DATA.ssn : formData.ssn });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
