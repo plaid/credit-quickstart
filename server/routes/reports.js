@@ -218,7 +218,7 @@ router.get("/home_lending_sharing_token", async (req, res, next) => {
 
     const response = await plaidClient.oauthToken({
       grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
-      subject_token_type: "urn:plaid:params:tokens:user",
+      subject_token_type: "urn:plaid:params:credit:multi-user",
       subject_token: record.plaidUserId,
       audience,
       scope: "user:read",
