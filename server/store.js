@@ -7,6 +7,7 @@ const DEFAULT_RECORD = {
   plaidUserId: null,
   reportReady: false,
   homeLending: false,
+  employmentRefreshRun: false,
 };
 
 let userRecord = { ...DEFAULT_RECORD };

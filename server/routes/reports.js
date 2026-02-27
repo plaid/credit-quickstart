@@ -133,9 +133,12 @@ router.get("/home_lending", async (req, res, next) => {
       return;
     }
 
+    const reportsRequested = ["VOA"];
+    if (record.employmentRefreshRun) reportsRequested.push("EMPLOYMENT_REFRESH");
+
     const response = await plaidClient.craCheckReportVerificationGet({
       user_id: record.plaidUserId,
-      reports_requested: ["VOA", "EMPLOYMENT_REFRESH"],  // VOA always; EMPLOYMENT_REFRESH populates after a refresh_employment call
+      reports_requested: reportsRequested,
     });
     res.json(response.data);
   } catch (error) {
@@ -241,7 +244,7 @@ router.post("/refresh_employment", async (req, res, next) => {
       days_requested: 730,
       consumer_report_permissible_purpose: "ACCOUNT_REVIEW_CREDIT",
     });
-    await updateRecord({ reportReady: false });
+    await updateRecord({ reportReady: false, employmentRefreshRun: true });
     res.json({ status: "success" });
   } catch (error) {
     next(error);
