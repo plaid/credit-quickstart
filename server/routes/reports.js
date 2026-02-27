@@ -139,6 +139,9 @@ router.get("/home_lending", async (req, res, next) => {
     const response = await plaidClient.craCheckReportVerificationGet({
       user_id: record.plaidUserId,
       reports_requested: reportsRequested,
+      ...(record.employmentRefreshRun && {
+        employment_refresh_options: { days_requested: 730 },
+      }),
     });
     res.json(response.data);
   } catch (error) {
