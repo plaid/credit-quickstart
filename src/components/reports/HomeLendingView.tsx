@@ -124,7 +124,7 @@ const EmploymentRefreshSection: React.FC<{
     setRefreshing(false);
     if (result) {
       setHomeLendingData(null);
-      setFlowState(FlowState.REPORT_REFRESH_PENDING);
+      setFlowState(FlowState.EMPLOYMENT_REFRESH_PENDING);
     }
   };
 

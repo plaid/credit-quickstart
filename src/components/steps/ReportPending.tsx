@@ -7,9 +7,10 @@ const POLL_INTERVAL_MS = 5000;
 
 interface ReportPendingProps {
   isRefresh?: boolean;
+  isEmploymentRefresh?: boolean;
 }
 
-const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
+const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false, isEmploymentRefresh = false }) => {
   const {
     setFlowState,
     setBaseReport,
@@ -149,7 +150,19 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false }) => {
       <div className="flex justify-center mb-4">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-mint-200 border-t-mint-600"></div>
       </div>
-      {isRefresh ? (
+      {isEmploymentRefresh ? (
+        <>
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            Verifying employment
+          </h2>
+          <p className="text-sm text-gray-500 mb-1">
+            Checking deposit history to confirm continued employment.
+          </p>
+          <p className="text-sm text-gray-400 mb-6">
+            This is the final verification step before closing — no new bank connection required.
+          </p>
+        </>
+      ) : isRefresh ? (
         <>
           <h2 className="text-xl font-semibold text-gray-800 mb-2">
             Generating updated report

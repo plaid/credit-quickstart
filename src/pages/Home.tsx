@@ -227,6 +227,9 @@ const Home: React.FC = () => {
       case FlowState.REPORT_REFRESH_PENDING:
         return <ReportPending isRefresh />;
 
+      case FlowState.EMPLOYMENT_REFRESH_PENDING:
+        return <ReportPending isEmploymentRefresh />;
+
       case FlowState.REPORT_READY:
         return <ReportDashboard />;
 

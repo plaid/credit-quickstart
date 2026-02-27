@@ -10,7 +10,8 @@
       "Bash(app\" that explains the button and the sandbox caveat.\n\nCo-Authored-By: Claude Sonnet 4.6 \\(1M context\\) <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git merge:*)",
       "Bash(application\", adds a distinct REPORT_REFRESH_PENDING flow state so the\nwaiting screen can show underwriter-appropriate copy, and updates the\ntest data to use Alberta Bobbeth Charleson / \\(111\\) 222-3333 to match\nthe Plaid sandbox account owner identity.\n\nCo-Authored-By: Claude Sonnet 4.6 \\(1M context\\) <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(grep:*)"
     ]
   }
 }
