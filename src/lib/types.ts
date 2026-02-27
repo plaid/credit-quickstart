@@ -142,28 +142,53 @@ export interface LendScoreData {
   };
 }
 
+export interface VoaAmountField {
+  amount: number;
+  iso_currency_code: string | null;
+  unofficial_currency_code?: string | null;
+}
+
+export interface VoaAccount {
+  account_id: string;
+  name: string;
+  official_name?: string | null;
+  mask?: string | null;
+  type: string;
+  subtype?: string | null;
+  days_available: number;
+  ownership_type?: string | null;
+  balances: {
+    available?: number | null;
+    current?: number | null;
+    limit?: number | null;
+    iso_currency_code?: string | null;
+  };
+  transactions_insights: {
+    all_transactions: BaseReportTransaction[];
+    start_date?: string | null;
+    end_date?: string | null;
+  };
+  owners?: BaseReportOwner[];
+}
+
 export interface HomeLendingData {
   report?: {
     report_id?: string;
     client_report_id?: string | null;
     voa?: {
-      generated_time?: string;
-      days_requested?: number;
-      items?: Array<{
-        item_id?: string;
-        accounts?: Array<{
-          account_id?: string;
-          name?: string;
-          official_name?: string | null;
-          type?: string;
-          subtype?: string | null;
-          balances?: {
-            available?: number | null;
-            current?: number | null;
-          };
-        }>;
+      generated_time: string;
+      days_requested: number;
+      items: Array<{
+        institution_name: string;
+        institution_id: string;
+        item_id: string;
+        last_update_time: string;
+        accounts: VoaAccount[];
       }>;
-      attributes?: Record<string, unknown>;
+      attributes: {
+        total_inflow_amount?: VoaAmountField | null;
+        total_outflow_amount?: VoaAmountField | null;
+      };
     } | null;
   };
 }

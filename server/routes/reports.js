@@ -143,6 +143,61 @@ router.get("/home_lending", async (req, res, next) => {
   }
 });
 
+router.get("/home_lending_pdf", async (req, res, next) => {
+  try {
+    const record = getRecord();
+    if (!record.plaidUserId || !record.homeLending) {
+      res.status(400).json({ error: "No home lending user found." });
+      return;
+    }
+
+    const response = await plaidClient.craCheckReportVerificationPdfGet(
+      { user_id: record.plaidUserId, report_requested: "voa" },
+      { responseType: "arraybuffer" }
+    );
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=voa_report.pdf");
+    res.send(Buffer.from(response.data));
+  } catch (error) {
+    if (error.response?.data instanceof ArrayBuffer || Buffer.isBuffer(error.response?.data)) {
+      try {
+        error.response.data = JSON.parse(Buffer.from(error.response.data).toString("utf8"));
+      } catch {
+        // not JSON, leave as-is
+      }
+    }
+    next(error);
+  }
+});
+
+router.get("/home_lending_sharing_token", async (req, res, next) => {
+  try {
+    const record = getRecord();
+    if (!record.plaidUserId || !record.homeLending) {
+      res.status(400).json({ error: "No home lending user found." });
+      return;
+    }
+
+    const { partner } = req.query;
+    const audience =
+      partner === "freddie-mac"
+        ? "urn:plaid:params:cra-partner:freddie-mac"
+        : "urn:plaid:params:cra-partner:fannie-mae";
+
+    const response = await plaidClient.oauthToken({
+      grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
+      subject_token_type: "urn:plaid:params:tokens:user",
+      subject_token: record.plaidUserId,
+      audience,
+      scope: "user:read",
+    });
+    res.json({ access_token: response.data.access_token, token_type: response.data.token_type });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post("/refresh", async (req, res, next) => {
   try {
     const record = getRecord();
