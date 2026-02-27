@@ -40,7 +40,7 @@ router.post("/create_link_token", async (req, res, next) => {
     if (record.homeLending) {
       craOptions.base_report = {
         gse_options: {
-          report_types: ["VOA"],
+          report_types: ["VOA", "EMPLOYMENT_REFRESH"],
         },
       };
     }

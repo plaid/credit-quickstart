@@ -171,10 +171,35 @@ export interface VoaAccount {
   owners?: BaseReportOwner[];
 }
 
+export interface EmploymentRefreshTransaction {
+  account_id: string;
+  original_description: string;
+  date: string;
+  pending: boolean;
+}
+
 export interface HomeLendingData {
   report?: {
     report_id?: string;
     client_report_id?: string | null;
+    employment_refresh?: {
+      generated_time: string;
+      days_requested: number;
+      items: Array<{
+        institution_name: string;
+        institution_id: string;
+        item_id: string;
+        last_update_time: string;
+        accounts: Array<{
+          account_id: string;
+          name: string;
+          official_name?: string | null;
+          type: string;
+          subtype?: string | null;
+          transactions: EmploymentRefreshTransaction[];
+        }>;
+      }>;
+    } | null;
     voa?: {
       generated_time: string;
       days_requested: number;

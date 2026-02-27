@@ -135,7 +135,7 @@ router.get("/home_lending", async (req, res, next) => {
 
     const response = await plaidClient.craCheckReportVerificationGet({
       user_id: record.plaidUserId,
-      reports_requested: ["VOA"],
+      reports_requested: ["VOA", "EMPLOYMENT_REFRESH"],
     });
     res.json(response.data);
   } catch (error) {
@@ -158,6 +158,34 @@ router.get("/home_lending_pdf", async (req, res, next) => {
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", "attachment; filename=voa_report.pdf");
+    res.send(Buffer.from(response.data));
+  } catch (error) {
+    if (error.response?.data instanceof ArrayBuffer || Buffer.isBuffer(error.response?.data)) {
+      try {
+        error.response.data = JSON.parse(Buffer.from(error.response.data).toString("utf8"));
+      } catch {
+        // not JSON, leave as-is
+      }
+    }
+    next(error);
+  }
+});
+
+router.get("/home_lending_employment_pdf", async (req, res, next) => {
+  try {
+    const record = getRecord();
+    if (!record.plaidUserId || !record.homeLending) {
+      res.status(400).json({ error: "No home lending user found." });
+      return;
+    }
+
+    const response = await plaidClient.craCheckReportVerificationPdfGet(
+      { user_id: record.plaidUserId, report_requested: "employment_refresh" },
+      { responseType: "arraybuffer" }
+    );
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=employment_refresh_report.pdf");
     res.send(Buffer.from(response.data));
   } catch (error) {
     if (error.response?.data instanceof ArrayBuffer || Buffer.isBuffer(error.response?.data)) {
