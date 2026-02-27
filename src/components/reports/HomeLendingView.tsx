@@ -152,7 +152,8 @@ const EmploymentRefreshSection: React.FC<{
           </div>
           <p className="text-xs text-purple-700 mt-0.5">
             Lightweight refresh that verifies continued employment via deposit patterns — no re-running Link required.
-            Amounts are omitted by design.
+            Amounts are omitted by design. The PDF is Plaid's official GSE-formatted report and contains a more limited
+            field set than the data shown here.
           </p>
         </div>
         <div className="flex gap-2 ml-4 shrink-0">
@@ -208,7 +209,7 @@ const EmploymentRefreshSection: React.FC<{
                         <span>Description</span>
                         <span className="text-right">Date</span>
                       </div>
-                      {account.transactions.map((txn: EmploymentRefreshTransaction, j) => (
+                      {[...account.transactions].sort((a, b) => b.date.localeCompare(a.date)).map((txn: EmploymentRefreshTransaction, j) => (
                         <div key={j} className="grid grid-cols-2 px-4 py-2 text-xs">
                           <span className="text-gray-700">{txn.original_description}</span>
                           <span className="text-gray-500 text-right">
