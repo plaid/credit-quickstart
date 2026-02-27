@@ -52,6 +52,27 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false, isEmpl
   };
 
   const fetchReports = async () => {
+    if (isEmploymentRefresh) {
+      // Employment refresh only updates home lending data — the base report
+      // and all other tabs reflect the original loan application and stay unchanged.
+      let coreError = "";
+      const homeLendingData = await callMyServer(
+        "/server/reports/home_lending",
+        false,
+        null,
+        (msg) => { coreError = msg; }
+      );
+      if (!homeLendingData) {
+        setDebugInfo(`Employment verification not ready yet — will retry.\n\n${coreError}`);
+        return false;
+      }
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+      setHomeLendingData(homeLendingData);
+      setDebugInfo("Employment verification complete.");
+      setFlowState(FlowState.REPORT_READY);
+      return true;
+    }
+
     const betaErrors: string[] = [];
     const logBetaError = (msg: string) => betaErrors.push(msg);
 
@@ -85,6 +106,7 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false, isEmpl
       : "Report loaded successfully.";
     setDebugInfo(statusMsg);
     setFlowState(FlowState.REPORT_READY);
+    return true;
   };
 
   const startPolling = (reason: string) => {
