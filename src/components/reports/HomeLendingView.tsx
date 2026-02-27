@@ -2,6 +2,8 @@ import { useState } from "react";
 import { HomeLendingData, VoaAmountField, VoaAccount, EmploymentRefreshTransaction } from "../../lib/types";
 import { showAsCurrency, formatDate, formatCategory } from "../../lib/utils";
 import { callMyServer } from "../../lib/utils";
+import { useAppContext } from "../../context/AppContext";
+import { FlowState } from "../../lib/constants";
 import TransactionTable from "./TransactionTable";
 
 interface HomeLendingViewProps {
@@ -110,15 +112,21 @@ const AccountCard: React.FC<{ account: VoaAccount }> = ({ account }) => {
 };
 
 const EmploymentRefreshSection: React.FC<{
-  data: NonNullable<HomeLendingData["report"]>["employment_refresh"];
+  data: NonNullable<HomeLendingData["report"]>["employment_refresh"] | null | undefined;
 }> = ({ data }) => {
+  const { setFlowState, setHomeLendingData } = useAppContext();
   const [showTxns, setShowTxns] = useState<Record<string, boolean>>({});
+  const [refreshing, setRefreshing] = useState(false);
 
-  if (!data) return null;
-
-  const allTxns = data.items.flatMap((item) =>
-    item.accounts.flatMap((a) => a.transactions)
-  );
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    const result = await callMyServer("/server/reports/refresh_employment", true, {});
+    setRefreshing(false);
+    if (result) {
+      setHomeLendingData(null);
+      setFlowState(FlowState.REPORT_REFRESH_PENDING);
+    }
+  };
 
   const handleDownloadPdf = async () => {
     const response = await fetch("/server/reports/home_lending_employment_pdf");
@@ -132,71 +140,91 @@ const EmploymentRefreshSection: React.FC<{
     URL.revokeObjectURL(url);
   };
 
+  const allTxns = data?.items.flatMap((item) => item.accounts.flatMap((a) => a.transactions)) ?? [];
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="border border-gray-200 rounded-lg overflow-hidden">
+      <div className="px-4 py-3 bg-purple-50 border-b border-purple-100 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded font-medium">Employment Refresh</span>
-            <span className="text-xs text-gray-400">{new Date(data.generated_time).toLocaleString()}</span>
+            {data && <span className="text-xs text-gray-400">{new Date(data.generated_time).toLocaleString()}</span>}
           </div>
-          <p className="text-xs text-gray-400 mt-0.5">
-            {data.days_requested} days · {allTxns.length} deposit{allTxns.length !== 1 ? "s" : ""} detected
-          </p>
-          <p className="text-xs text-gray-400 mt-0.5">
-            Deposit descriptions only — amounts are intentionally omitted to verify employment without exposing salary.
+          <p className="text-xs text-purple-700 mt-0.5">
+            Lightweight refresh that verifies continued employment via deposit patterns — no re-running Link required.
+            Amounts are omitted by design.
           </p>
         </div>
-        <button
-          onClick={handleDownloadPdf}
-          className="text-sm bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded hover:bg-gray-50 font-medium shrink-0 ml-4"
-        >
-          Download PDF
-        </button>
+        <div className="flex gap-2 ml-4 shrink-0">
+          {data && (
+            <button onClick={handleDownloadPdf} className="text-sm bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded hover:bg-gray-50 font-medium">
+              Download PDF
+            </button>
+          )}
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="text-sm bg-purple-600 text-white px-3 py-1.5 rounded hover:bg-purple-500 disabled:opacity-50 font-medium"
+          >
+            {refreshing ? "Requesting..." : data ? "Re-run" : "Run Employment Refresh"}
+          </button>
+        </div>
       </div>
 
-      {data.items.map((item, i) => (
-        <div key={item.item_id ?? i} className="border border-gray-200 rounded-lg overflow-hidden">
-          <div className="px-4 py-2 bg-gray-50 flex items-center justify-between">
-            <span className="text-sm font-semibold text-gray-700">{item.institution_name}</span>
-            <span className="text-xs text-gray-400">Updated {new Date(item.last_update_time).toLocaleString()}</span>
+      {!data ? (
+        <div className="px-4 py-6 text-center text-gray-400">
+          <p className="text-sm">No Employment Refresh data yet.</p>
+          <p className="text-xs mt-1">Click "Run Employment Refresh" above to verify continued employment without re-running Link.</p>
+        </div>
+      ) : (
+        <div className="divide-y divide-gray-100">
+          <div className="px-4 py-2 text-xs text-gray-500">
+            {data.days_requested} days · {allTxns.length} deposit{allTxns.length !== 1 ? "s" : ""} detected
           </div>
-          {item.accounts.map((account) => (
-            <div key={account.account_id} className="border-t border-gray-100">
-              <button
-                onClick={() => setShowTxns((prev) => ({ ...prev, [account.account_id]: !prev[account.account_id] }))}
-                className="w-full px-4 py-2 text-left flex justify-between items-center hover:bg-gray-50"
-              >
-                <div>
-                  <span className="text-sm font-medium text-gray-800">{account.name}</span>
-                  <span className="text-xs text-gray-400 ml-2 capitalize">{account.type}{account.subtype ? ` · ${account.subtype}` : ""}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-gray-400">{account.transactions.length} deposit{account.transactions.length !== 1 ? "s" : ""}</span>
-                  <span className="text-xs text-gray-400">{showTxns[account.account_id] ? "▲" : "▼"}</span>
-                </div>
-              </button>
-              {showTxns[account.account_id] && account.transactions.length > 0 && (
-                <div className="border-t border-gray-100 divide-y divide-gray-50">
-                  <div className="grid grid-cols-2 px-4 py-1.5 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wide">
-                    <span>Description</span>
-                    <span className="text-right">Date</span>
-                  </div>
-                  {account.transactions.map((txn: EmploymentRefreshTransaction, j) => (
-                    <div key={j} className="grid grid-cols-2 px-4 py-2 text-xs">
-                      <span className="text-gray-700">{txn.original_description}</span>
-                      <span className="text-gray-500 text-right">
-                        {formatDate(txn.date)}
-                        {txn.pending && <span className="text-yellow-600 ml-1">(pending)</span>}
-                      </span>
+          {data.items.map((item, i) => (
+            <div key={item.item_id ?? i}>
+              <div className="px-4 py-2 bg-gray-50 flex items-center justify-between">
+                <span className="text-sm font-semibold text-gray-700">{item.institution_name}</span>
+                <span className="text-xs text-gray-400">Updated {new Date(item.last_update_time).toLocaleString()}</span>
+              </div>
+              {item.accounts.map((account) => (
+                <div key={account.account_id} className="border-t border-gray-100">
+                  <button
+                    onClick={() => setShowTxns((prev) => ({ ...prev, [account.account_id]: !prev[account.account_id] }))}
+                    className="w-full px-4 py-2 text-left flex justify-between items-center hover:bg-gray-50"
+                  >
+                    <div>
+                      <span className="text-sm font-medium text-gray-800">{account.name}</span>
+                      <span className="text-xs text-gray-400 ml-2 capitalize">{account.type}{account.subtype ? ` · ${account.subtype}` : ""}</span>
                     </div>
-                  ))}
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs text-gray-400">{account.transactions.length} deposit{account.transactions.length !== 1 ? "s" : ""}</span>
+                      <span className="text-xs text-gray-400">{showTxns[account.account_id] ? "▲" : "▼"}</span>
+                    </div>
+                  </button>
+                  {showTxns[account.account_id] && account.transactions.length > 0 && (
+                    <div className="border-t border-gray-100 divide-y divide-gray-50">
+                      <div className="grid grid-cols-2 px-4 py-1.5 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        <span>Description</span>
+                        <span className="text-right">Date</span>
+                      </div>
+                      {account.transactions.map((txn: EmploymentRefreshTransaction, j) => (
+                        <div key={j} className="grid grid-cols-2 px-4 py-2 text-xs">
+                          <span className="text-gray-700">{txn.original_description}</span>
+                          <span className="text-gray-500 text-right">
+                            {formatDate(txn.date)}
+                            {txn.pending && <span className="text-yellow-600 ml-1">(pending)</span>}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
+              ))}
             </div>
           ))}
         </div>
-      ))}
+      )}
     </div>
   );
 };
@@ -363,14 +391,7 @@ const HomeLendingView: React.FC<HomeLendingViewProps> = ({ data }) => {
       ))}
 
       {/* Employment Refresh */}
-      {data.report?.employment_refresh ? (
-        <EmploymentRefreshSection data={data.report.employment_refresh} />
-      ) : (
-        <div className="border border-gray-200 rounded-lg p-4 text-center text-gray-400">
-          <p className="text-sm">Employment Refresh report not available.</p>
-          <p className="text-xs mt-1">This may require re-running Link with the updated configuration.</p>
-        </div>
-      )}
+      <EmploymentRefreshSection data={data.report?.employment_refresh} />
 
       {/* GSE sharing token */}
       <SharingTokenSection />

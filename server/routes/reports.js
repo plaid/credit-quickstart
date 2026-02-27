@@ -135,7 +135,7 @@ router.get("/home_lending", async (req, res, next) => {
 
     const response = await plaidClient.craCheckReportVerificationGet({
       user_id: record.plaidUserId,
-      reports_requested: ["VOA", "EMPLOYMENT_REFRESH"],
+      reports_requested: ["VOA", "EMPLOYMENT_REFRESH"],  // VOA always; EMPLOYMENT_REFRESH populates after a refresh_employment call
     });
     res.json(response.data);
   } catch (error) {
@@ -221,6 +221,28 @@ router.get("/home_lending_sharing_token", async (req, res, next) => {
       scope: "user:read",
     });
     res.json({ access_token: response.data.access_token, token_type: response.data.token_type });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/refresh_employment", async (req, res, next) => {
+  try {
+    const record = getRecord();
+    if (!record.plaidUserId || !record.homeLending) {
+      res.status(400).json({ error: "No home lending user found." });
+      return;
+    }
+
+    const webhookUrl = process.env.WEBHOOK_URL || "";
+    await plaidClient.craCheckReportCreate({
+      user_id: record.plaidUserId,
+      webhook: webhookUrl,
+      days_requested: 730,
+      consumer_report_permissible_purpose: "ACCOUNT_REVIEW_CREDIT",
+    });
+    await updateRecord({ reportReady: false });
+    res.json({ status: "success" });
   } catch (error) {
     next(error);
   }
