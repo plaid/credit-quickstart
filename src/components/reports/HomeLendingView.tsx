@@ -152,8 +152,10 @@ const EmploymentRefreshSection: React.FC<{
           </div>
           <p className="text-xs text-purple-700 mt-0.5">
             Lightweight refresh that verifies continued employment via deposit patterns — no re-running Link required.
-            Amounts are omitted by design. The PDF is Plaid's official GSE-formatted report and contains a more limited
-            field set than the data shown here.
+            Amounts are omitted by design.
+          </p>
+          <p className="text-xs text-purple-600 mt-0.5">
+            The PDF is Plaid's official GSE-formatted report and contains a more limited field set than the data shown here.
           </p>
         </div>
         <div className="flex gap-2 ml-4 shrink-0">
