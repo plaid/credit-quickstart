@@ -27,8 +27,11 @@ const handleServerError = async function (
   const error = await responseObject.json();
   console.error("Server error:", error);
   if (onError) {
-    const errorMsg = `❌ Server Error: ${error.error_message || error.error || JSON.stringify(error)}`;
-    onError(errorMsg);
+    const parts = ["❌ Server Error"];
+    if (error.error_type) parts.push(error.error_type);
+    if (error.error_code) parts.push(error.error_code);
+    const message = error.error_message || error.error || JSON.stringify(error);
+    onError(`${parts.join(" · ")}: ${message}`);
   }
 };
 
