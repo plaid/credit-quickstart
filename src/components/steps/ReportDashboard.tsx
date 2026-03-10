@@ -113,7 +113,7 @@ const ReportDashboard: React.FC = () => {
               onClick={handleRefreshReport}
               className="text-sm text-gray-500 hover:text-gray-700 underline"
             >
-              Simulate new application
+              Refresh data
             </button>
             <button
               onClick={handleStartOver}
@@ -138,11 +138,6 @@ const ReportDashboard: React.FC = () => {
           <button className={tabClass("income_insights")} onClick={() => setActiveTab("income_insights")}>
             Income Insights
           </button>
-          {isHomeLending && (
-            <button className={tabClass("home_lending")} onClick={() => setActiveTab("home_lending")}>
-              Home Lending
-            </button>
-          )}
           <button className={tabClass("network_insights")} onClick={() => setActiveTab("network_insights")}>
             Network Insights
           </button>
@@ -152,6 +147,11 @@ const ReportDashboard: React.FC = () => {
           <button className={tabClass("lend_score")} onClick={() => setActiveTab("lend_score")}>
             LendScore
           </button>
+          {isHomeLending && (
+            <button className={tabClass("home_lending")} onClick={() => setActiveTab("home_lending")}>
+              Home Lending
+            </button>
+          )}
         </nav>
       </div>
 
