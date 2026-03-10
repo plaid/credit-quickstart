@@ -32,8 +32,13 @@ const routes = ["users", "tokens", "reports", "events"];
 
 await Promise.all(
   routes.map(async (route) => {
-    const routeModule = await import(`./routes/${route}.js`);
-    app.use(`/server/${route}`, routeModule.default);
+    try {
+      const routeModule = await import(`./routes/${route}.js`);
+      app.use(`/server/${route}`, routeModule.default);
+    } catch (err) {
+      console.error(`❌ Failed to load route module "${route}":`, err);
+      process.exit(1);
+    }
   })
 );
 
@@ -60,4 +65,12 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Main server listening on port ${PORT}`);
+}).on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    console.error(`\n❌ Port ${PORT} is already in use. A previous server may still be running.`);
+    console.error(`   Try: lsof -ti :${PORT} | xargs kill`);
+  } else {
+    console.error("❌ Failed to start server:", err);
+  }
+  process.exit(1);
 });
