@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { FlowState } from "../lib/constants";
+import { callMyServer } from "../lib/utils";
 import {
   ApplicantFormData,
   BaseReportData,
@@ -37,6 +38,7 @@ interface AppContextType {
   setDebugInfo: (info: string) => void;
   webhookUrl: string;
   setWebhookUrl: (url: string) => void;
+  resetApp: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -62,6 +64,22 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [isHomeLending, setIsHomeLending] = useState<boolean>(false);
   const [debugInfo, setDebugInfo] = useState<string>("Debug info will appear here...");
   const [webhookUrl, setWebhookUrl] = useState<string>("");
+
+  const resetApp = async () => {
+    await callMyServer("/server/users/reset", true, {});
+    setBaseReport(null);
+    setIncomeInsights(null);
+    setNetworkInsights(null);
+    setCashflowInsights(null);
+    setLendScore(null);
+    setHomeLendingData(null);
+    setIsHomeLending(false);
+    setUserId(null);
+    setLinkToken(null);
+    setApplicantData(null);
+    setDebugInfo("Debug info will appear here...");
+    setFlowState(FlowState.WELCOME);
+  };
 
   return (
     <AppContext.Provider
@@ -92,6 +110,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setDebugInfo,
         webhookUrl,
         setWebhookUrl,
+        resetApp,
       }}
     >
       {children}

@@ -9,11 +9,8 @@ const DebugPanel: React.FC = () => {
   const [updateStatus, setUpdateStatus] = useState("");
 
   const handleUpdateWebhook = async () => {
-    let url = newWebhookUrl.trim();
+    const url = newWebhookUrl.trim();
     if (!url) return;
-    if (!url.includes("/server/receive_webhook")) {
-      url = url.replace(/\/$/, "") + "/server/receive_webhook";
-    }
     const result = await callMyServer<{ status: string; webhookUrl: string }>(
       "/server/tokens/update_webhook",
       true,

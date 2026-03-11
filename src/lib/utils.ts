@@ -13,7 +13,7 @@ export const callMyServer = async function <T = any>(
   const response = await fetch(endpoint, optionsObj);
   if (!response.ok) {
     await handleServerError(response, onError);
-    return null as unknown as T;
+    return null;
   }
   const data = await response.json();
   console.log(`Result from calling ${endpoint}: ${JSON.stringify(data)}`);
@@ -24,14 +24,24 @@ const handleServerError = async function (
   responseObject: Response,
   onError?: (errorMsg: string) => void
 ): Promise<void> {
-  const error = await responseObject.json();
-  console.error("Server error:", error);
+  const text = await responseObject.text().catch(() => "");
+  let error: Record<string, unknown> | null = null;
+  try {
+    error = JSON.parse(text);
+  } catch {
+    // not JSON
+  }
+  console.error("Server error:", error ?? text);
   if (onError) {
-    const parts = ["❌ Server Error"];
-    if (error.error_type) parts.push(error.error_type);
-    if (error.error_code) parts.push(error.error_code);
-    const message = error.error_message || error.error || JSON.stringify(error);
-    onError(`${parts.join(" · ")}: ${message}`);
+    if (error) {
+      const parts = ["❌ Server Error"];
+      if (error.error_type) parts.push(String(error.error_type));
+      if (error.error_code) parts.push(String(error.error_code));
+      const message = String(error.error_message ?? error.error ?? text || responseObject.status);
+      onError(`${parts.join(" · ")}: ${message}`);
+    } else {
+      onError(`❌ Server Error ${responseObject.status}${text ? `: ${text}` : ""}`);
+    }
   }
 };
 

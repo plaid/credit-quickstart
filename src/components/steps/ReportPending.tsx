@@ -19,11 +19,10 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false, isEmpl
     setCashflowInsights,
     setLendScore,
     setHomeLendingData,
-    setUserId,
     isHomeLending,
     webhookUrl,
     setDebugInfo,
-    setLinkToken,
+    resetApp,
   } = useAppContext();
   const eventSourceRef = useRef<EventSource | null>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -38,17 +37,7 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false, isEmpl
     setIsResetting(true);
     eventSourceRef.current?.close();
     if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-    await callMyServer("/server/users/reset", true, {});
-    setBaseReport(null);
-    setIncomeInsights(null);
-    setNetworkInsights(null);
-    setCashflowInsights(null);
-    setLendScore(null);
-    setHomeLendingData(null);
-    setUserId(null);
-    setLinkToken(null);
-    setDebugInfo("Debug info will appear here...");
-    setFlowState(FlowState.WELCOME);
+    await resetApp();
   };
 
   const fetchReports = async () => {

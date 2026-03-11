@@ -15,17 +15,7 @@ type ReportTab = "base_report" | "income_insights" | "network_insights" | "cashf
 const ReportDashboard: React.FC = () => {
   const {
     setFlowState,
-    setBaseReport,
-    setIncomeInsights,
-    setNetworkInsights,
-    setCashflowInsights,
-    setLendScore,
-    setHomeLendingData,
-    setIsHomeLending,
-    setUserId,
-    setLinkToken,
-    setDebugInfo,
-    setApplicantData,
+    resetApp,
     baseReport,
     applicantData,
     networkInsights,
@@ -49,21 +39,7 @@ const ReportDashboard: React.FC = () => {
     setFlowState(FlowState.REPORT_REFRESH_PENDING);
   };
 
-  const handleStartOver = async () => {
-    await callMyServer("/server/users/reset", true, {});
-    setBaseReport(null);
-    setIncomeInsights(null);
-    setNetworkInsights(null);
-    setCashflowInsights(null);
-    setLendScore(null);
-    setHomeLendingData(null);
-    setIsHomeLending(false);
-    setUserId(null);
-    setLinkToken(null);
-    setApplicantData(null);
-    setDebugInfo("Debug info will appear here...");
-    setFlowState(FlowState.WELCOME);
-  };
+  const handleStartOver = resetApp;
 
   const tabClass = (tab: ReportTab) =>
     `py-2 px-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${

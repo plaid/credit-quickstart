@@ -65,10 +65,10 @@ Once the report is ready, you'll see tabs for each product:
 
 - **Base Report** — account balances and transaction history
 - **Income Insights** — detected income sources and estimated monthly income
-- **Home Lending** — Verification of Assets (VOA) report for GSE sharing; only shown when the home lending checkbox was checked during application
 - **Network Insights** — risk signals from connection history including rent, BNPL, cash advances, and EWA (beta)
 - **Cashflow Insights** — aggregated transaction volatility measures across income and expenditure categories (beta)
 - **LendScore** — 1–99 default risk score with top adverse action reason codes (beta)
+- **Home Lending** — Verification of Assets (VOA) report for GSE sharing; only shown when the home lending checkbox was checked during application
 
 Additional actions:
 - **Download PDF** — full consumer report PDF

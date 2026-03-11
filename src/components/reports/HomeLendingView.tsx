@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { HomeLendingData, VoaAmountField, VoaAccount, EmploymentRefreshTransaction } from "../../lib/types";
-import { showAsCurrency, formatDate, formatCategory } from "../../lib/utils";
-import { callMyServer } from "../../lib/utils";
+import { showAsCurrency, formatDate, formatCategory, callMyServer } from "../../lib/utils";
 import { useAppContext } from "../../context/AppContext";
 import { FlowState } from "../../lib/constants";
 import TransactionTable from "./TransactionTable";
@@ -117,6 +116,7 @@ const EmploymentRefreshSection: React.FC<{
   const { setFlowState, setHomeLendingData } = useAppContext();
   const [showTxns, setShowTxns] = useState<Record<string, boolean>>({});
   const [refreshing, setRefreshing] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -129,8 +129,12 @@ const EmploymentRefreshSection: React.FC<{
   };
 
   const handleDownloadPdf = async () => {
+    setPdfError(null);
     const response = await fetch("/server/reports/home_lending_employment_pdf");
-    if (!response.ok) return;
+    if (!response.ok) {
+      setPdfError("Failed to download employment PDF.");
+      return;
+    }
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -155,19 +159,22 @@ const EmploymentRefreshSection: React.FC<{
             Amounts are omitted by design. The PDF is Plaid's official GSE-formatted report and contains a more limited field set than the data shown here.
           </p>
         </div>
-        <div className="flex gap-2 ml-4 shrink-0">
-          {data && (
-            <button onClick={handleDownloadPdf} className="text-sm bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded hover:bg-gray-50 font-medium">
-              Download PDF
+        <div className="flex flex-col items-end gap-1 ml-4 shrink-0">
+          <div className="flex gap-2">
+            {data && (
+              <button onClick={handleDownloadPdf} className="text-sm bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded hover:bg-gray-50 font-medium">
+                Download PDF
+              </button>
+            )}
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="text-sm bg-purple-600 text-white px-3 py-1.5 rounded hover:bg-purple-500 disabled:opacity-50 font-medium"
+            >
+              {refreshing ? "Requesting..." : data ? "Re-run" : "Run Employment Refresh"}
             </button>
-          )}
-          <button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="text-sm bg-purple-600 text-white px-3 py-1.5 rounded hover:bg-purple-500 disabled:opacity-50 font-medium"
-          >
-            {refreshing ? "Requesting..." : data ? "Re-run" : "Run Employment Refresh"}
-          </button>
+          </div>
+          {pdfError && <p className="text-xs text-red-600">{pdfError}</p>}
         </div>
       </div>
 
@@ -289,9 +296,15 @@ const SharingTokenSection: React.FC = () => {
 };
 
 const HomeLendingView: React.FC<HomeLendingViewProps> = ({ data }) => {
+  const [pdfError, setPdfError] = useState<string | null>(null);
+
   const handleDownloadPdf = async () => {
+    setPdfError(null);
     const response = await fetch("/server/reports/home_lending_pdf");
-    if (!response.ok) return;
+    if (!response.ok) {
+      setPdfError("Failed to download VOA PDF.");
+      return;
+    }
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -338,12 +351,15 @@ const HomeLendingView: React.FC<HomeLendingViewProps> = ({ data }) => {
             {voa.days_requested} days requested · {allAccounts.length} account{allAccounts.length !== 1 ? "s" : ""} · {totalTxnCount.toLocaleString()} transactions
           </p>
         </div>
-        <button
-          onClick={handleDownloadPdf}
-          className="text-sm bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded hover:bg-gray-50 font-medium flex items-center gap-1.5"
-        >
-          Download PDF
-        </button>
+        <div className="flex flex-col items-end gap-1">
+          <button
+            onClick={handleDownloadPdf}
+            className="text-sm bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded hover:bg-gray-50 font-medium flex items-center gap-1.5"
+          >
+            Download PDF
+          </button>
+          {pdfError && <p className="text-xs text-red-600">{pdfError}</p>}
+        </div>
       </div>
 
       {/* Inflow / Outflow summary */}

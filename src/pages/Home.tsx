@@ -264,7 +264,7 @@ const Home: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              <tr className="text-orange-600 font-semibold">
+              <tr className="text-gray-500">
                 <td className="pr-3">user_bank_income</td>
                 <td>{"{}"}</td>
               </tr>
