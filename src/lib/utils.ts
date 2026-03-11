@@ -37,7 +37,7 @@ const handleServerError = async function (
       const parts = ["❌ Server Error"];
       if (error.error_type) parts.push(String(error.error_type));
       if (error.error_code) parts.push(String(error.error_code));
-      const message = String(error.error_message ?? error.error ?? text || responseObject.status);
+      const message = String((error.error_message ?? error.error ?? text) || responseObject.status);
       onError(`${parts.join(" · ")}: ${message}`);
     } else {
       onError(`❌ Server Error ${responseObject.status}${text ? `: ${text}` : ""}`);
