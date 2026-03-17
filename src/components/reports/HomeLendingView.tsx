@@ -236,24 +236,39 @@ const EmploymentRefreshSection: React.FC<{
   );
 };
 
+type GsePartner = "fannie-mae" | "freddie-mac" | "both";
+
 const SharingTokenSection: React.FC = () => {
-  const [partner, setPartner] = useState<"fannie-mae" | "freddie-mac">("fannie-mae");
-  const [token, setToken] = useState<string | null>(null);
+  const [partner, setPartner] = useState<GsePartner>("fannie-mae");
+  const [tokens, setTokens] = useState<{ fannieMae?: string; freddieMac?: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleGenerate = async () => {
-    setLoading(true);
-    setToken(null);
-    setError(null);
+  const fetchToken = async (p: "fannie-mae" | "freddie-mac") => {
     const result = await callMyServer<{ access_token: string }>(
-      `/server/reports/home_lending_sharing_token?partner=${partner}`,
+      `/server/reports/home_lending_sharing_token?partner=${p}`,
       false,
       null,
       (msg) => setError(msg)
     );
+    return result?.access_token ?? null;
+  };
+
+  const handleGenerate = async () => {
+    setLoading(true);
+    setTokens(null);
+    setError(null);
+    if (partner === "both") {
+      const [fannieMae, freddieMac] = await Promise.all([
+        fetchToken("fannie-mae"),
+        fetchToken("freddie-mac"),
+      ]);
+      if (fannieMae || freddieMac) setTokens({ fannieMae: fannieMae ?? undefined, freddieMac: freddieMac ?? undefined });
+    } else {
+      const token = await fetchToken(partner);
+      if (token) setTokens(partner === "fannie-mae" ? { fannieMae: token } : { freddieMac: token });
+    }
     setLoading(false);
-    if (result?.access_token) setToken(result.access_token);
   };
 
   return (
@@ -261,17 +276,18 @@ const SharingTokenSection: React.FC = () => {
       <div>
         <h3 className="text-sm font-semibold text-gray-700">GSE Sharing Token</h3>
         <p className="text-xs text-gray-500 mt-0.5">
-          Generate an OAuth token to share this VOA report with a GSE partner (Fannie Mae or Freddie Mac).
+          Generate an OAuth token to share this VOA report with a GSE partner (Fannie Mae, Freddie Mac, or both).
         </p>
       </div>
       <div className="flex items-center gap-3">
         <select
           value={partner}
-          onChange={(e) => { setPartner(e.target.value as "fannie-mae" | "freddie-mac"); setToken(null); setError(null); }}
+          onChange={(e) => { setPartner(e.target.value as GsePartner); setTokens(null); setError(null); }}
           className="text-sm border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:border-mint-450"
         >
           <option value="fannie-mae">Fannie Mae</option>
           <option value="freddie-mac">Freddie Mac</option>
+          <option value="both">Fannie Mae + Freddie Mac</option>
         </select>
         <button
           onClick={handleGenerate}
@@ -282,20 +298,31 @@ const SharingTokenSection: React.FC = () => {
         </button>
       </div>
       {error && <p className="text-xs text-red-600">{error}</p>}
-      {token && (
+      {tokens?.fannieMae && (
         <div>
-          <p className="text-xs text-gray-500 mb-1">Share this token with {partner === "fannie-mae" ? "Fannie Mae" : "Freddie Mac"}:</p>
+          <p className="text-xs text-gray-500 mb-1">Share this token with Fannie Mae:</p>
           <div className="bg-gray-900 text-green-400 font-mono text-xs p-3 rounded break-all select-all">
-            {token}
+            {tokens.fannieMae}
           </div>
-          <p className="text-xs text-gray-400 mt-1">This token is time-limited. Generate a new one for each sharing session.</p>
         </div>
+      )}
+      {tokens?.freddieMac && (
+        <div>
+          <p className="text-xs text-gray-500 mb-1">Share this token with Freddie Mac:</p>
+          <div className="bg-gray-900 text-green-400 font-mono text-xs p-3 rounded break-all select-all">
+            {tokens.freddieMac}
+          </div>
+        </div>
+      )}
+      {(tokens?.fannieMae || tokens?.freddieMac) && (
+        <p className="text-xs text-gray-400">Tokens are time-limited. Generate new ones for each sharing session.</p>
       )}
     </div>
   );
 };
 
 const HomeLendingView: React.FC<HomeLendingViewProps> = ({ data }) => {
+  const { isGseSharing } = useAppContext();
   const [pdfError, setPdfError] = useState<string | null>(null);
 
   const handleDownloadPdf = async () => {
@@ -409,8 +436,8 @@ const HomeLendingView: React.FC<HomeLendingViewProps> = ({ data }) => {
       {/* Employment Refresh */}
       <EmploymentRefreshSection data={data.report?.employment_refresh} />
 
-      {/* GSE sharing token */}
-      <SharingTokenSection />
+      {/* GSE sharing token — only shown when SSN was provided */}
+      {isGseSharing && <SharingTokenSection />}
     </div>
   );
 };

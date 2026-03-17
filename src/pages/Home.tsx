@@ -28,6 +28,8 @@ const Home: React.FC = () => {
     setLendScore,
     setHomeLendingData,
     setIsHomeLending,
+    setIsGseSharing,
+    setEnabledProducts,
   } = useAppContext();
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [linkExited, setLinkExited] = useState(false);
@@ -37,7 +39,7 @@ const Home: React.FC = () => {
     const restoreState = async () => {
       const [webhookData, status] = await Promise.all([
         callMyServer<{ webhookUrl: string }>("/server/tokens/webhook_url"),
-        callMyServer<{ hasUser: boolean; plaidUserId: string | null; reportReady: boolean; homeLending: boolean }>("/server/users/status"),
+        callMyServer<{ hasUser: boolean; plaidUserId: string | null; reportReady: boolean; homeLending: boolean; gseSharing: boolean; enabledProducts: string[] }>("/server/users/status"),
       ]);
 
       if (webhookData?.webhookUrl) setWebhookUrl(webhookData.webhookUrl);
@@ -45,16 +47,19 @@ const Home: React.FC = () => {
       if (status?.hasUser) {
         if (status.plaidUserId) setUserId(status.plaidUserId);
         if (status.homeLending) setIsHomeLending(true);
+        if (status.gseSharing) setIsGseSharing(true);
+        if (status.enabledProducts) setEnabledProducts(status.enabledProducts);
         const betaErrors: string[] = [];
         const logBetaError = (msg: string) => betaErrors.push(msg);
 
+        const eps = status.enabledProducts ?? ["network_insights", "cashflow_insights", "lend_score"];
         const [baseReport, incomeInsights, networkInsights, cashflowInsights, lendScore] =
           await Promise.all([
             callMyServer("/server/reports/base_report"),
             callMyServer("/server/reports/income_insights"),
-            callMyServer("/server/reports/network_insights", false, null, logBetaError),
-            callMyServer("/server/reports/cashflow_insights", false, null, logBetaError),
-            callMyServer("/server/reports/lend_score", false, null, logBetaError),
+            eps.includes("network_insights") ? callMyServer("/server/reports/network_insights", false, null, logBetaError) : null,
+            eps.includes("cashflow_insights") ? callMyServer("/server/reports/cashflow_insights", false, null, logBetaError) : null,
+            eps.includes("lend_score") ? callMyServer("/server/reports/lend_score", false, null, logBetaError) : null,
           ]);
         if (baseReport && incomeInsights) {
           setBaseReport(baseReport);
@@ -77,7 +82,7 @@ const Home: React.FC = () => {
       setIsInitializing(false);
     };
     restoreState();
-  }, [setWebhookUrl, setFlowState, setBaseReport, setIncomeInsights, setNetworkInsights, setCashflowInsights, setLendScore, setHomeLendingData, setIsHomeLending]);
+  }, [setWebhookUrl, setFlowState, setBaseReport, setIncomeInsights, setNetworkInsights, setCashflowInsights, setLendScore, setHomeLendingData, setIsHomeLending, setIsGseSharing, setEnabledProducts]);
 
   const handleApplyClicked = () => {
     setFlowState(FlowState.APPLICANT_FORM);
@@ -90,6 +95,8 @@ const Home: React.FC = () => {
     setDebugInfo("Creating your Plaid user...");
 
     if (data.homeLending) setIsHomeLending(true);
+    if (data.gseSharing) setIsGseSharing(true);
+    if (data.enabledProducts) setEnabledProducts(data.enabledProducts);
 
     const result = await callMyServer<{ status: string; plaidUserId: string }>(
       "/server/users/create",

@@ -12,6 +12,8 @@ export interface ApplicantFormData {
   };
   ssn?: string;
   homeLending?: boolean;
+  gseSharing?: boolean;
+  enabledProducts?: string[];
 }
 
 export interface BaseReportOwner {

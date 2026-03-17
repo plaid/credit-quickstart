@@ -24,20 +24,14 @@ router.post("/create_link_token", async (req, res, next) => {
 
     const webhookUrl = process.env.WEBHOOK_URL || "";
 
-    const craOptions = {
-      days_requested: 730,
-      cashflow_insights: {
-        attributes_version: "CFI1",
-      },
-      lend_score: {
-        lend_score_version: "LS1",
-      },
-      network_insights: {
-        network_insights_version: "NI1",
-      },
-    };
+    const enabledProducts = record.enabledProducts ?? ["network_insights", "cashflow_insights", "lend_score"];
 
-    if (record.homeLending) {
+    const craOptions = { days_requested: 730 };
+    if (enabledProducts.includes("cashflow_insights")) craOptions.cashflow_insights = { attributes_version: "CFI1" };
+    if (enabledProducts.includes("lend_score")) craOptions.lend_score = { lend_score_version: "LS1" };
+    if (enabledProducts.includes("network_insights")) craOptions.network_insights = { network_insights_version: "NI1" };
+
+    if (record.gseSharing) {
       craOptions.base_report = {
         gse_options: {
           report_types: ["VOA"],
@@ -45,11 +39,16 @@ router.post("/create_link_token", async (req, res, next) => {
       };
     }
 
+    const products = ["cra_base_report"];
+    if (enabledProducts.includes("network_insights")) products.push("cra_network_insights");
+    if (enabledProducts.includes("cashflow_insights")) products.push("cra_cashflow_insights");
+    if (enabledProducts.includes("lend_score")) products.push("cra_lend_score");
+
     const linkTokenRequest = {
       user_id: record.plaidUserId,
       user: { client_user_id: record.clientUserId },
       client_name: "Platypus Lending",
-      products: ["cra_base_report", "cra_network_insights", "cra_cashflow_insights", "cra_lend_score"],
+      products,
       country_codes: ["US"],
       language: "en",
       cra_options: craOptions,
@@ -61,6 +60,7 @@ router.post("/create_link_token", async (req, res, next) => {
     }
 
     const response = await plaidClient.linkTokenCreate(linkTokenRequest);
+    console.log(`Link token created — products: [${products.join(", ")}], gse_options: ${!!record.gseSharing}`);
     res.json({ linkToken: response.data.link_token });
   } catch (error) {
     next(error);

@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
+import { exec } from "child_process";
 import { loadStore } from "./store.js";
 
 dotenv.config();
@@ -28,7 +29,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const routes = ["users", "tokens", "reports", "events"];
+const routes = ["users", "tokens", "reports"];
 
 await Promise.all(
   routes.map(async (route) => {
@@ -43,34 +44,46 @@ await Promise.all(
 );
 
 const eventsModule = await import("./routes/events.js");
+app.use("/server/events", eventsModule.default);
 app.post("/internal/report-ready", (req, res) => {
   eventsModule.notifyReportReady();
   res.json({ status: "ok" });
 });
 
 const errorHandler = function (err, req, res, next) {
-  console.error("Server error:");
+  const route = `${req.method} ${req.originalUrl}`;
   if (err.response?.data != null) {
+    const { error_type, error_code, error_message, request_id } = err.response.data;
+    console.error(`Plaid error [${route}]: ${error_type}/${error_code} — ${error_message} (request_id: ${request_id})`);
     res.status(500).send(err.response.data);
-    console.error(err.response.data);
   } else {
+    console.error(`Server error [${route}]:`, err.message ?? err);
     res.status(500).send({
       error_code: "OTHER_ERROR",
       error_message: "An unexpected error occurred on the server.",
     });
-    console.error(JSON.stringify(err, null, 2));
   }
 };
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Main server listening on port ${PORT}`);
-}).on("error", (err) => {
-  if (err.code === "EADDRINUSE") {
-    console.error(`\n❌ Port ${PORT} is already in use. A previous server may still be running.`);
-    console.error(`   Try: lsof -ti :${PORT} | xargs kill`);
-  } else {
-    console.error("❌ Failed to start server:", err);
-  }
-  process.exit(1);
-});
+const startServer = () => {
+  app.listen(PORT, () => {
+    console.log(`Main server listening on port ${PORT}`);
+  }).on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+      console.error(`Port ${PORT} in use — killing existing process and retrying...`);
+      exec(`lsof -ti :${PORT} | xargs kill`, (killErr) => {
+        if (killErr) {
+          console.error(`❌ Failed to free port ${PORT}:`, killErr.message);
+          process.exit(1);
+        }
+        setTimeout(startServer, 500);
+      });
+    } else {
+      console.error("❌ Failed to start server:", err);
+      process.exit(1);
+    }
+  });
+};
+
+startServer();

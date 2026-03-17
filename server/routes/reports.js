@@ -121,6 +121,7 @@ router.get("/lend_score", async (req, res, next) => {
 });
 
 router.get("/home_lending", async (req, res, next) => {
+  let reportsRequested = ["VOA"];
   try {
     const record = getRecord();
     if (!record.plaidUserId) {
@@ -133,18 +134,18 @@ router.get("/home_lending", async (req, res, next) => {
       return;
     }
 
-    const reportsRequested = ["VOA"];
     if (record.employmentRefreshRun) reportsRequested.push("EMPLOYMENT_REFRESH");
 
     const response = await plaidClient.craCheckReportVerificationGet({
       user_id: record.plaidUserId,
       reports_requested: reportsRequested,
       ...(record.employmentRefreshRun && {
-        employment_refresh_options: { days_requested: 730 },
+        employment_refresh_options: { days_requested: 60 },
       }),
     });
     res.json(response.data);
   } catch (error) {
+    console.error(`[home_lending] craCheckReportVerificationGet failed — reports_requested: ${JSON.stringify(reportsRequested)}`);
     next(error);
   }
 });
@@ -240,13 +241,14 @@ router.post("/refresh_employment", async (req, res, next) => {
       return;
     }
 
-    const webhookUrl = process.env.WEBHOOK_URL || "";
-    await plaidClient.craCheckReportCreate({
+    const body = {
       user_id: record.plaidUserId,
-      webhook: webhookUrl,
       days_requested: 730,
       consumer_report_permissible_purpose: "ACCOUNT_REVIEW_CREDIT",
-    });
+    };
+    if (process.env.WEBHOOK_URL) body.webhook = process.env.WEBHOOK_URL;
+    await plaidClient.craCheckReportCreate(body);
+    console.log("craCheckReportCreate succeeded — employment refresh");
     await updateRecord({ reportReady: false, employmentRefreshRun: true });
     res.json({ status: "success" });
   } catch (error) {
@@ -262,16 +264,18 @@ router.post("/refresh", async (req, res, next) => {
       return;
     }
 
-    const webhookUrl = process.env.WEBHOOK_URL || "";
-    await plaidClient.craCheckReportCreate({
+    const enabledProducts = record.enabledProducts ?? ["network_insights", "cashflow_insights", "lend_score"];
+    const body = {
       user_id: record.plaidUserId,
-      webhook: webhookUrl,
       days_requested: 730,
       consumer_report_permissible_purpose: "ACCOUNT_REVIEW_CREDIT",
-      cashflow_insights: { attributes_version: "CFI1" },
-      lend_score: { lend_score_version: "LS1" },
-      network_insights: { network_insights_version: "NI1" },
-    });
+    };
+    if (process.env.WEBHOOK_URL) body.webhook = process.env.WEBHOOK_URL;
+    if (enabledProducts.includes("cashflow_insights")) body.cashflow_insights = { attributes_version: "CFI1" };
+    if (enabledProducts.includes("lend_score")) body.lend_score = { lend_score_version: "LS1" };
+    if (enabledProducts.includes("network_insights")) body.network_insights = { network_insights_version: "NI1" };
+    await plaidClient.craCheckReportCreate(body);
+    console.log(`craCheckReportCreate succeeded — products: [${Object.keys(body).filter(k => ["cashflow_insights", "lend_score", "network_insights"].includes(k)).join(", ") || "base only"}]`);
     await updateRecord({ reportReady: false });
     res.json({ status: "success" });
   } catch (error) {

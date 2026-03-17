@@ -34,6 +34,12 @@ interface AppContextType {
   setHomeLendingData: (data: HomeLendingData | null) => void;
   isHomeLending: boolean;
   setIsHomeLending: (v: boolean) => void;
+  isGseSharing: boolean;
+  setIsGseSharing: (v: boolean) => void;
+  enabledProducts: string[];
+  setEnabledProducts: (products: string[]) => void;
+  pendingReportTab: string | null;
+  setPendingReportTab: (tab: string | null) => void;
   debugInfo: string;
   setDebugInfo: (info: string) => void;
   webhookUrl: string;
@@ -62,6 +68,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [lendScore, setLendScore] = useState<LendScoreData | null>(null);
   const [homeLendingData, setHomeLendingData] = useState<HomeLendingData | null>(null);
   const [isHomeLending, setIsHomeLending] = useState<boolean>(false);
+  const [isGseSharing, setIsGseSharing] = useState<boolean>(false);
+  const [enabledProducts, setEnabledProducts] = useState<string[]>(["network_insights", "cashflow_insights", "lend_score"]);
+  const [pendingReportTab, setPendingReportTab] = useState<string | null>(null);
   const [debugInfo, setDebugInfo] = useState<string>("Debug info will appear here...");
   const [webhookUrl, setWebhookUrl] = useState<string>("");
 
@@ -74,6 +83,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setLendScore(null);
     setHomeLendingData(null);
     setIsHomeLending(false);
+    setIsGseSharing(false);
+    setEnabledProducts(["network_insights", "cashflow_insights", "lend_score"]);
+    setPendingReportTab(null);
     setUserId(null);
     setLinkToken(null);
     setApplicantData(null);
@@ -106,6 +118,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setHomeLendingData,
         isHomeLending,
         setIsHomeLending,
+        isGseSharing,
+        setIsGseSharing,
+        enabledProducts,
+        setEnabledProducts,
+        pendingReportTab,
+        setPendingReportTab,
         debugInfo,
         setDebugInfo,
         webhookUrl,

@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post("/create", async (req, res, next) => {
   try {
-    const { firstName, lastName, dateOfBirth, email, phoneNumber, address, ssn, homeLending } =
+    const { firstName, lastName, dateOfBirth, email, phoneNumber, address, ssn, homeLending, gseSharing, enabledProducts } =
       req.body;
 
     const clientUserId = "user_" + uuidv4();
@@ -32,8 +32,7 @@ router.post("/create", async (req, res, next) => {
       ],
     };
 
-    if (homeLending && ssn) {
-      // Strip formatting and pass SSN via id_numbers for home lending / GSE reports
+    if (gseSharing && ssn) {
       const ssnDigits = ssn.replace(/\D/g, "");
       identityObj.id_numbers = [{ value: ssnDigits, type: "us_ssn" }];
     }
@@ -47,7 +46,14 @@ router.post("/create", async (req, res, next) => {
 
     const plaidUserId = userCreateResponse.data.user_id;
 
-    await updateRecord({ clientUserId, plaidUserId, reportReady: false, homeLending: !!homeLending });
+    await updateRecord({
+      clientUserId,
+      plaidUserId,
+      reportReady: false,
+      homeLending: !!homeLending,
+      gseSharing: !!gseSharing,
+      enabledProducts: Array.isArray(enabledProducts) ? enabledProducts : ["network_insights", "cashflow_insights", "lend_score"],
+    });
 
     console.log(`Created user with Plaid user_id: ${plaidUserId}`);
     res.json({ status: "success", plaidUserId });
@@ -73,6 +79,8 @@ router.get("/status", async (req, res, next) => {
       plaidUserId: record.plaidUserId,
       reportReady: record.reportReady,
       homeLending: !!record.homeLending,
+      gseSharing: !!record.gseSharing,
+      enabledProducts: record.enabledProducts ?? ["network_insights", "cashflow_insights", "lend_score"],
     });
   } catch (error) {
     next(error);

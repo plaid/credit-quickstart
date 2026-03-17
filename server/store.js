@@ -7,7 +7,9 @@ const DEFAULT_RECORD = {
   plaidUserId: null,
   reportReady: false,
   homeLending: false,
+  gseSharing: false,
   employmentRefreshRun: false,
+  enabledProducts: ["network_insights", "cashflow_insights", "lend_score"],
 };
 
 let userRecord = { ...DEFAULT_RECORD };

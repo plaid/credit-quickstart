@@ -87,6 +87,9 @@ const LendScoreView: React.FC<LendScoreViewProps> = ({ data }) => {
                   </li>
                 ))}
               </ol>
+              <p className="text-xs text-gray-600 mt-3">
+                Contact your Plaid account manager for a key to interpret these codes.
+              </p>
             </div>
           )}
         </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAppContext } from "../../context/AppContext";
 import { FlowState } from "../../lib/constants";
 import { callMyServer, formatPhone } from "../../lib/utils";
@@ -23,6 +23,9 @@ const ReportDashboard: React.FC = () => {
     lendScore,
     homeLendingData,
     isHomeLending,
+    enabledProducts,
+    pendingReportTab,
+    setPendingReportTab,
   } = useAppContext();
 
   const owner = baseReport?.report?.items
@@ -32,7 +35,11 @@ const ReportDashboard: React.FC = () => {
   const dateGenerated = baseReport?.report?.date_generated
     ? new Date(baseReport.report.date_generated).toLocaleString()
     : null;
-  const [activeTab, setActiveTab] = useState<ReportTab>("base_report");
+  const [activeTab, setActiveTab] = useState<ReportTab>((pendingReportTab as ReportTab) ?? "base_report");
+
+  useEffect(() => {
+    if (pendingReportTab) setPendingReportTab(null);
+  }, []);
 
   const handleRefreshReport = async () => {
     await callMyServer("/server/reports/refresh", true, {});
@@ -80,7 +87,7 @@ const ReportDashboard: React.FC = () => {
               </div>
             </div>
             <p className="text-xs text-gray-400 mt-1">
-              Powered by Plaid Check Reports
+              Powered by Plaid Check
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -114,15 +121,21 @@ const ReportDashboard: React.FC = () => {
           <button className={tabClass("income_insights")} onClick={() => setActiveTab("income_insights")}>
             Income Insights
           </button>
-          <button className={tabClass("network_insights")} onClick={() => setActiveTab("network_insights")}>
-            Network Insights
-          </button>
-          <button className={tabClass("cashflow_insights")} onClick={() => setActiveTab("cashflow_insights")}>
-            Cashflow Insights
-          </button>
-          <button className={tabClass("lend_score")} onClick={() => setActiveTab("lend_score")}>
-            LendScore
-          </button>
+          {enabledProducts.includes("network_insights") && (
+            <button className={tabClass("network_insights")} onClick={() => setActiveTab("network_insights")}>
+              Network Insights
+            </button>
+          )}
+          {enabledProducts.includes("cashflow_insights") && (
+            <button className={tabClass("cashflow_insights")} onClick={() => setActiveTab("cashflow_insights")}>
+              Cashflow Insights
+            </button>
+          )}
+          {enabledProducts.includes("lend_score") && (
+            <button className={tabClass("lend_score")} onClick={() => setActiveTab("lend_score")}>
+              LendScore
+            </button>
+          )}
           {isHomeLending && (
             <button className={tabClass("home_lending")} onClick={() => setActiveTab("home_lending")}>
               Home Lending

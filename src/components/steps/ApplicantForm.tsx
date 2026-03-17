@@ -6,6 +6,8 @@ interface ApplicantFormProps {
   isLoading: boolean;
 }
 
+const ALL_BETA_PRODUCTS = ["network_insights", "cashflow_insights", "lend_score"] as const;
+
 const TEST_DATA: ApplicantFormData = {
   firstName: "Alberta",
   lastName: "Bobbeth Charleson",
@@ -20,6 +22,8 @@ const TEST_DATA: ApplicantFormData = {
   },
   ssn: "123-45-6789",
   homeLending: true,
+  gseSharing: true,
+  enabledProducts: [...ALL_BETA_PRODUCTS],
 };
 
 const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, isLoading }) => {
@@ -36,7 +40,9 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, isLoading }) =>
       postalCode: "",
     },
     ssn: "",
-    homeLending: false,
+    homeLending: true,
+    gseSharing: true,
+    enabledProducts: [...ALL_BETA_PRODUCTS],
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,8 +53,21 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, isLoading }) =>
         ...prev,
         address: { ...prev.address, [field]: value },
       }));
+    } else if (name.startsWith("product.")) {
+      const product = name.split(".")[1];
+      setFormData((prev) => {
+        const current = prev.enabledProducts ?? [];
+        const updated = checked ? [...current, product] : current.filter((p) => p !== product);
+        return { ...prev, enabledProducts: updated };
+      });
     } else if (type === "checkbox") {
-      setFormData((prev) => ({ ...prev, [name]: checked }));
+      if (name === "homeLending" && !checked) {
+        setFormData((prev) => ({ ...prev, homeLending: false, gseSharing: false, ssn: "" }));
+      } else if (name === "gseSharing" && !checked) {
+        setFormData((prev) => ({ ...prev, gseSharing: false, ssn: "" }));
+      } else {
+        setFormData((prev) => ({ ...prev, [name]: checked }));
+      }
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -188,38 +207,77 @@ const ApplicantForm: React.FC<ApplicantFormProps> = ({ onSubmit, isLoading }) =>
           </div>
         </div>
 
-        <div className="border-t border-gray-200 pt-4">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              name="homeLending"
-              checked={!!formData.homeLending}
-              onChange={handleChange}
-              className="h-4 w-4 rounded border-gray-300 text-mint-600 focus:ring-mint-500"
-            />
-            <span className="text-sm font-medium text-gray-700">Home lending application (VOA)</span>
-          </label>
-          <p className="text-xs text-gray-400 mt-1 ml-6">
-            Enables Verification of Assets report for GSE sharing (Fannie Mae, Freddie Mac). Requires full SSN.
-          </p>
-        </div>
-
-        {formData.homeLending && (
+        <div className="border-t border-gray-200 pt-4 space-y-3">
           <div>
-            <label className={labelClass}>Social Security Number</label>
-            <input
-              className={inputClass}
-              name="ssn"
-              type="text"
-              placeholder="123-45-6789"
-              value={formData.ssn ?? ""}
-              onChange={handleChange}
-              autoComplete="off"
-              required={!!formData.homeLending}
-            />
-            <p className="text-xs text-gray-400 mt-1">Required for GSE report sharing. Format: XXX-XX-XXXX</p>
+            <p className="text-xs font-medium text-gray-600 mb-2">CRA Products</p>
+            <p className="text-xs text-gray-400 mb-2">
+              Base Report and Income Insights are always included.
+            </p>
+            {([
+              { id: "network_insights", label: "Network Insights" },
+              { id: "cashflow_insights", label: "Cashflow Insights" },
+              { id: "lend_score", label: "LendScore" },
+            ] as const).map(({ id, label }) => (
+              <label key={id} className="flex items-center gap-2 cursor-pointer mb-1">
+                <input
+                  type="checkbox"
+                  name={`product.${id}`}
+                  checked={(formData.enabledProducts ?? []).includes(id)}
+                  onChange={handleChange}
+                  className="h-4 w-4 rounded border-gray-300 text-mint-600 focus:ring-mint-500"
+                />
+                <span className="text-sm text-gray-700">{label} <span className="text-xs text-gray-400">(beta)</span></span>
+              </label>
+            ))}
           </div>
-        )}
+
+          <div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="homeLending"
+                checked={!!formData.homeLending}
+                onChange={handleChange}
+                className="h-4 w-4 rounded border-gray-300 text-mint-600 focus:ring-mint-500"
+              />
+              <span className="text-sm font-medium text-gray-700">Home Lending Report (VOA)</span>
+            </label>
+            <p className="text-xs text-gray-400 mt-1 ml-6">
+              Enables the Verification of Assets report for home lending (HELOC, mortgages, etc.).
+            </p>
+
+            {formData.homeLending && (
+              <div className="ml-6 mt-2 space-y-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="gseSharing"
+                    checked={!!formData.gseSharing}
+                    onChange={handleChange}
+                    className="h-4 w-4 rounded border-gray-300 text-mint-600 focus:ring-mint-500"
+                  />
+                  <span className="text-sm text-gray-700">Enable GSE sharing (Fannie Mae / Freddie Mac)</span>
+                </label>
+                {formData.gseSharing && (
+                  <div>
+                    <label className={labelClass}>Social Security Number</label>
+                    <input
+                      className={inputClass}
+                      name="ssn"
+                      type="text"
+                      placeholder="123-45-6789"
+                      value={formData.ssn ?? ""}
+                      onChange={handleChange}
+                      autoComplete="off"
+                      required
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Format: XXX-XX-XXXX</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
 
         <button
           type="submit"
