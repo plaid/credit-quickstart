@@ -140,8 +140,10 @@ const EmploymentRefreshSection: React.FC<{
     const a = document.createElement("a");
     a.href = url;
     a.download = "employment_refresh_report.pdf";
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
   };
 
   const allTxns = data?.items.flatMap((item) => item.accounts.flatMap((a) => a.transactions)) ?? [];
@@ -337,8 +339,10 @@ const HomeLendingView: React.FC<HomeLendingViewProps> = ({ data }) => {
     const a = document.createElement("a");
     a.href = url;
     a.download = "voa_report.pdf";
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
   };
 
   if (!data) {

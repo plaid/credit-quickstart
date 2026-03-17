@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
+import { exec } from "child_process";
 import { loadStore, updateRecord } from "./store.js";
 
 dotenv.config();
@@ -42,6 +43,24 @@ const errorHandler = function (err, req, res, next) {
 };
 app.use(errorHandler);
 
-app.listen(WEBHOOK_PORT, () => {
-  console.log(`Webhook server listening on port ${WEBHOOK_PORT}`);
-});
+const startServer = () => {
+  app.listen(WEBHOOK_PORT, () => {
+    console.log(`Webhook server listening on port ${WEBHOOK_PORT}`);
+  }).on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+      console.error(`Port ${WEBHOOK_PORT} in use — killing existing process and retrying...`);
+      exec(`lsof -ti :${WEBHOOK_PORT} | xargs kill`, (killErr) => {
+        if (killErr) {
+          console.error(`❌ Failed to free port ${WEBHOOK_PORT}:`, killErr.message);
+          process.exit(1);
+        }
+        setTimeout(startServer, 500);
+      });
+    } else {
+      console.error("❌ Failed to start webhook server:", err);
+      process.exit(1);
+    }
+  });
+};
+
+startServer();
