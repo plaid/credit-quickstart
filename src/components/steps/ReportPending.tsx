@@ -29,9 +29,13 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false, isEmpl
   const eventSourceRef = useRef<EventSource | null>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const webhookUrlRef = useRef(webhookUrl);
+  const enabledProductsRef = useRef(enabledProducts);
   useEffect(() => {
     webhookUrlRef.current = webhookUrl;
   }, [webhookUrl]);
+  useEffect(() => {
+    enabledProductsRef.current = enabledProducts;
+  }, [enabledProducts]);
   const [isResetting, setIsResetting] = useState(false);
   const [pollingFallback, setPollingFallback] = useState(false);
 
@@ -75,9 +79,9 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false, isEmpl
       await Promise.all([
         callMyServer("/server/reports/base_report", false, null, logCoreError),
         callMyServer("/server/reports/income_insights", false, null, logCoreError),
-        enabledProducts.includes("network_insights") ? callMyServer("/server/reports/network_insights", false, null, logBetaError) : null,
-        enabledProducts.includes("cashflow_insights") ? callMyServer("/server/reports/cashflow_insights", false, null, logBetaError) : null,
-        enabledProducts.includes("lend_score") ? callMyServer("/server/reports/lend_score", false, null, logBetaError) : null,
+        enabledProductsRef.current.includes("network_insights") ? callMyServer("/server/reports/network_insights", false, null, logBetaError) : null,
+        enabledProductsRef.current.includes("cashflow_insights") ? callMyServer("/server/reports/cashflow_insights", false, null, logBetaError) : null,
+        enabledProductsRef.current.includes("lend_score") ? callMyServer("/server/reports/lend_score", false, null, logBetaError) : null,
       ]);
     if (baseReport == null || incomeInsights == null) {
       setDebugInfo(`Report not ready yet — will retry.\n\n${coreError}`);

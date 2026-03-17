@@ -436,7 +436,7 @@ const HomeLendingView: React.FC<HomeLendingViewProps> = ({ data }) => {
       {/* Employment Refresh */}
       <EmploymentRefreshSection data={data.report?.employment_refresh} />
 
-      {/* GSE sharing token — only shown when SSN was provided */}
+      {/* GSE sharing token — only shown when GSE sharing was enabled on the application */}
       {isGseSharing && <SharingTokenSection />}
     </div>
   );
