@@ -58,7 +58,7 @@ const ReportPending: React.FC<ReportPendingProps> = ({ isRefresh = false, isEmpl
         (msg) => { coreError = msg; }
       );
       if (!homeLendingData) {
-        setDebugInfo("Employment verification not ready yet — will retry.");
+        setDebugInfo(`Employment verification not ready yet — will retry.\n\n${coreError}`);
         return false;
       }
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
