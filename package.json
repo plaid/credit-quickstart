@@ -17,7 +17,7 @@
     "body-parser": "^2.2.2",
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
-    "plaid": "^41.1.0",
+    "plaid": "^42.2.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-plaid-link": "^4.1.1",
