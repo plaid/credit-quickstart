@@ -9,6 +9,7 @@ user_data.json
 
 # Build output
 dist/
+*.tsbuildinfo
 
 # Editor
 .DS_Store
