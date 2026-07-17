@@ -45,7 +45,8 @@ await Promise.all(
 
 const eventsModule = await import("./routes/events.js");
 app.use("/server/events", eventsModule.default);
-app.post("/internal/report-ready", (req, res) => {
+app.post("/internal/report-ready", async (req, res) => {
+  await loadStore();
   eventsModule.notifyReportReady();
   res.json({ status: "ok" });
 });
