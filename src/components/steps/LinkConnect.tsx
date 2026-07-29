@@ -3,7 +3,7 @@ import { usePlaidLink, PlaidLinkOptions } from "react-plaid-link";
 
 interface LinkConnectProps {
   linkToken: string;
-  onSuccess: (publicToken: string) => void;
+  onSuccess: (publicToken: string | null) => void;
   onExit: () => void;
 }
 
