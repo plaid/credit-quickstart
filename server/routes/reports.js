@@ -158,7 +158,7 @@ router.get("/home_lending_pdf", async (req, res, next) => {
     }
 
     const response = await plaidClient.craCheckReportVerificationPdfGet(
-      { user_id: record.plaidUserId, report_requested: "voa" },
+      { user_id: record.plaidUserId, reports_requested: ["voa"] },
       { responseType: "arraybuffer" }
     );
 
@@ -186,7 +186,7 @@ router.get("/home_lending_employment_pdf", async (req, res, next) => {
     }
 
     const response = await plaidClient.craCheckReportVerificationPdfGet(
-      { user_id: record.plaidUserId, report_requested: "employment_refresh" },
+      { user_id: record.plaidUserId, reports_requested: ["employment_refresh"] },
       { responseType: "arraybuffer" }
     );
 
