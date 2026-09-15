@@ -9,7 +9,7 @@ A sample loan application demonstrating Plaid's [Check Consumer Report (CRA)](ht
 | Network Insights | Beta |
 | Cashflow Insights | Beta |
 | LendScore | Beta |
-| Home Lending (VOA) | Beta |
+| Home Lending (VOA) | Early availability |
 
 For Statements, see the regular multi-product [Quickstart](https://github.com/plaid/quickstart).
 
@@ -21,7 +21,7 @@ Built with React 19 + Vite + TypeScript on the frontend, and Node.js + Express o
 
 Access to Consumer Report in Sandbox is not granted by default. Existing Plaid customers can [submit a product access request](https://dashboard.plaid.com/support/new/admin/account-administration/request-product-access) or contact their account manager. New customers can [contact Sales](https://plaid.com/contact/).
 
-The beta modules (Network Insights, Cashflow Insights, LendScore, Home Lending) require separate enablement. Contact your account manager if those tabs show "not available."
+The beta modules (Network Insights, Cashflow Insights, LendScore) and the Home Lending module (early availability) require separate enablement. Contact your account manager if those tabs show "not available."
 
 ## Running the app
 
