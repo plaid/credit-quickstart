@@ -14,10 +14,10 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "4.1.18",
-    "body-parser": "^2.2.2",
+    "body-parser": "^2.3.0",
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
-    "plaid": "^45.0.0",
+    "plaid": "^47.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-plaid-link": "^5.0.0",
