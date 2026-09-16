@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 import express from "express";
-import bodyParser from "body-parser";
 import { exec } from "child_process";
 import { loadStore, updateRecord } from "./store.js";
 
@@ -11,8 +10,8 @@ const WEBHOOK_PORT = process.env.WEBHOOK_PORT || 8002;
 await loadStore();
 
 const app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.post("/server/receive_webhook", async (req, res, next) => {
   try {
