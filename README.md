@@ -15,8 +15,6 @@ For Statements, see the regular multi-product [Quickstart](https://github.com/pl
 
 Plaid Check Consumer Report is Plaid's recommended solution for most credit use cases. For the legacy Income product, see [income-sample](https://github.com/plaid/income-sample).
 
-Built with React 19 + Vite + TypeScript on the frontend, and Node.js + Express on the backend.
-
 ## Prerequisites
 
 Access to Consumer Report in Sandbox is not granted by default. Existing Plaid customers can [submit a product access request](https://dashboard.plaid.com/support/new/admin/account-administration/request-product-access) or contact their account manager. New customers can [contact Sales](https://plaid.com/contact/).
@@ -46,9 +44,9 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 Click **Apply for a Loan**, then complete the form. Use **Fill with test data** to pre-fill the form including a test SSN and the home lending checkbox. Due to Sandbox limitations, the phone number prefilled in Link will not necessarily match the phone number entered in this form; this will not occur in Production.
 
-When Plaid Link opens, use a **non-OAuth institution** (e.g. First Platypus Bank) and the Sandbox credentials below. Income Insights works by analyzing recurring income patterns in transaction history — the default `user_good` test user doesn't have those. The credentials below are designed with data that makes the reports meaningful:
+When Plaid Link opens, use a **non-OAuth institution** (e.g. First Platypus Bank) and the Sandbox credentials below. The default `user_good` Sandbox user should not be used with this app as it doesn't have realistic income history. 
 
-> **Important:** In Plaid Link, if you're going through the returning user flow, connect a new bank rather than using a saved account — that way you can enter the Sandbox credentials below.
+> **Important:** In Plaid Link, if you're going through the returning user flow, connect a new bank rather than using a saved account so that you can enter the Sandbox credentials below.
 
 | Username | Password | Description |
 |---|---|---|
@@ -75,21 +73,6 @@ Additional actions:
 - **Refresh data** — triggers a report refresh for the same user without re-running Link, demonstrating the [`/cra/check_report/create`](https://plaid.com/docs/api/products/check/#cracheckreportcreate) flow. In Sandbox the refreshed report won't show new data since there's no new activity to pick up.
 - **Start Over** — resets the app
 
-## Product selection
-
-The applicant form lets you choose which beta products to request. Base Report and Income Insights are always included. The three beta products — Network Insights, Cashflow Insights, and LendScore — can be toggled individually; uncheck any that your client is not enabled for. The link token and report refresh will only request the selected products, and unselected tabs will not appear in the report dashboard.
-
-## Home Lending Report
-
-The Home Lending Report (VOA) is not limited to GSE-backed loans — it can be used for HELOCs, non-traditional mortgages, and any home lending use case where asset verification is needed. Lenders who don't work with GSEs at all can still use this product.
-
-Checking **Home Lending Report (VOA)** on the form enables the Verification of Assets report.
-
-The form has two separate checkboxes:
-
-- **Home Lending Report (VOA)** — enables the VOA report and shows the Home Lending tab. Works for any home lending use case; GSE involvement is not required.
-- **Enable GSE sharing** (sub-option) — enables `gse_options` in the link token and reveals an SSN field. Required only when the lender needs to share the report with Fannie Mae or Freddie Mac via the sharing token. Fill with test data pre-fills SSN `123-45-6789` and checks both boxes.
-
 ## Receiving webhooks
 
 Plaid sends a `USER_CHECK_REPORT_READY` webhook when your report is generated. To receive it locally, expose port 8002 with [ngrok](https://ngrok.com/):
@@ -104,7 +87,7 @@ Copy the forwarding URL into your `.env` file:
 WEBHOOK_URL=https://abc123.ngrok-free.app
 ```
 
-The `/server/receive_webhook` path is appended automatically — you can paste just the base URL. Restart the server after updating `.env`. You can also update the webhook URL at runtime via the debug panel without restarting.
+The `/server/receive_webhook` path is appended automatically so you can paste just the base URL. Restart the server after updating `.env`. You can also update the webhook URL at runtime via the debug panel without restarting.
 
 To inspect incoming webhooks, open [http://localhost:4040](http://localhost:4040). ngrok's inspector shows every request with full headers and body, and lets you replay them.
 
