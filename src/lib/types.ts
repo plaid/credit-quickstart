@@ -21,7 +21,13 @@ export interface BaseReportOwner {
   emails: { data: string; type: string }[];
   phone_numbers: { data: string; type: string }[];
   addresses: {
-    data: { street: string; city: string; region: string; postal_code: string; country: string };
+    data: {
+      street: string | null;
+      city: string | null;
+      region: string | null;
+      postal_code: string | null;
+      country: string | null;
+    };
     primary: boolean;
   }[];
 }
@@ -31,7 +37,7 @@ export interface BaseReportAccount {
   name: string;
   official_name?: string;
   type: string;
-  subtype?: string;
+  subtype?: string | null;
   balances: {
     available?: number | null;
     current?: number | null;

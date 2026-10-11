@@ -30,7 +30,7 @@ const BaseReportView: React.FC = () => {
                 <div>
                   <p className="font-medium text-gray-800">{account.name}</p>
                   <p className="text-xs text-gray-500 capitalize">
-                    {account.type} · {account.subtype}
+                    {account.type}{account.subtype ? ` · ${account.subtype}` : ""}
                   </p>
                 </div>
                 <div className="text-right">
