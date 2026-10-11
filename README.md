@@ -6,9 +6,9 @@ A sample loan application demonstrating Plaid's [Check Consumer Report (CRA)](ht
 |---|---|
 | Base Report | GA |
 | Income Insights | GA |
-| Network Insights | Beta |
 | Cashflow Insights | Beta |
 | LendScore | Beta |
+| Network Insights | Beta |
 | Home Lending (VOA) | Early availability |
 
 For Statements, see the regular multi-product [Quickstart](https://github.com/plaid/quickstart).
