@@ -70,7 +70,7 @@ Once the report is ready, you'll see tabs for each product:
 
 Additional actions:
 - **Download PDF** — full consumer report PDF
-- **Refresh data** — triggers a report refresh for the same user without re-running Link, demonstrating the [`/cra/check_report/create`](https://plaid.com/docs/api/products/check/#cracheckreportcreate) flow. In Sandbox the refreshed report won't show new data since there's no new activity to pick up.
+- **Refresh data** — triggers a report refresh for the same user without re-running Link, demonstrating the [`/cra/check_report/create`](https://plaid.com/docs/api/products/check-legacy/#cracheck_reportcreate) flow. In Sandbox the refreshed report won't show new data since there's no new activity to pick up.
 - **Start Over** — resets the app
 
 ## Receiving webhooks
