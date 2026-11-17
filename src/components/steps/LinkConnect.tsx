@@ -1,25 +1,39 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { usePlaidLink, PlaidLinkOptions } from "react-plaid-link";
 
 interface LinkConnectProps {
   linkToken: string;
-  onSuccess: (publicToken: string | null) => void;
+  onComplete: () => void;
   onExit: () => void;
 }
 
-const LinkConnect: React.FC<LinkConnectProps> = ({ linkToken, onSuccess, onExit }) => {
+const LinkConnect: React.FC<LinkConnectProps> = ({ linkToken, onComplete, onExit }) => {
+  // Success is signaled by HANDOFF (onSuccess is empty in Multi-Item Link); wait for Link to close before unmounting.
+  const handedOff = useRef(false);
+  const closed = useRef(false);
+  const finishIfDone = () => {
+    if (handedOff.current && closed.current) onComplete();
+  };
+
   const config: PlaidLinkOptions = {
     token: linkToken,
-    onSuccess: (public_token) => {
-      console.log("Plaid Link success, public token received");
-      onSuccess(public_token);
+    onSuccess: () => {
+      console.log("Plaid Link onSuccess");
+      closed.current = true;
+      finishIfDone();
     },
     onExit: (err, metadata) => {
       console.log("Plaid Link exited", { err, metadata });
-      onExit();
+      closed.current = true;
+      if (handedOff.current) onComplete();
+      else onExit();
     },
     onEvent: (eventName, metadata) => {
       console.log(`Plaid Link event: ${eventName}`, metadata);
+      if (eventName === "HANDOFF") {
+        handedOff.current = true;
+        finishIfDone();
+      }
     },
   };
 

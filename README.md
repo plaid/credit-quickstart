@@ -48,6 +48,8 @@ When Plaid Link opens, use a **non-OAuth institution** (e.g. First Platypus Bank
 
 > **Important:** In Plaid Link, if you're going through the returning user flow, connect a new bank rather than using a saved account so that you can enter the Sandbox credentials below.
 
+Link uses [Multi-Item Link](https://plaid.com/docs/link/multi-item-link/), so after connecting one bank the applicant can add more in the same session. The report covers every connected account.
+
 | Username | Password | Description |
 |---|---|---|
 | `user_bank_income` | `{}` | Wide variety of income streams of different types |
