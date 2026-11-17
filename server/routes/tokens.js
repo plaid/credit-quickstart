@@ -53,6 +53,7 @@ router.post("/create_link_token", async (req, res, next) => {
       language: "en",
       cra_options: craOptions,
       consumer_report_permissible_purpose: "ACCOUNT_REVIEW_CREDIT",
+      enable_multi_item_link: true,
     };
 
     if (webhookUrl) {

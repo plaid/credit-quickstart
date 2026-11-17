@@ -26,6 +26,9 @@ app.post("/server/receive_webhook", async (req, res, next) => {
       await updateRecord({ reportReady: true });
       const mainServerPort = process.env.APP_PORT || 3001;
       await fetch(`http://localhost:${mainServerPort}/internal/report-ready`, { method: "POST" });
+    } else if (webhookType === "LINK" && webhookCode === "SESSION_FINISHED") {
+      // Logged for visibility; this flow doesn't need the public tokens.
+      console.log(`Link session finished: ${req.body.status}`);
     } else {
       console.log(`Unhandled webhook: ${webhookType}/${webhookCode}`);
     }

@@ -134,9 +134,9 @@ const Home: React.FC = () => {
     setFlowState(FlowState.LINK_CONNECT);
   };
 
-  const handleLinkSuccess = (_publicToken: string | null) => {
+  const handleLinkComplete = () => {
     setDebugInfo(
-      "Bank account connected! Waiting for Plaid to generate your report...\n\nPlaid will send a USER_CHECK_REPORT_READY webhook when the report is ready."
+      "Bank accounts connected! Waiting for Plaid to generate your report...\n\nPlaid will send a USER_CHECK_REPORT_READY webhook when the report is ready."
     );
     setFlowState(FlowState.REPORT_PENDING);
   };
@@ -223,7 +223,7 @@ const Home: React.FC = () => {
         return (
           <LinkConnect
             linkToken={linkToken}
-            onSuccess={handleLinkSuccess}
+            onComplete={handleLinkComplete}
             onExit={handleLinkExit}
           />
         );
